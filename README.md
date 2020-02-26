@@ -1,0 +1,2 @@
+# lobster
+Alternative Smalltalk IDE
