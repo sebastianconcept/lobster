@@ -67,10 +67,9 @@ LBModel >> initializeTheme [
 
 { #category : #accessing }
 LBModel >> respondTo: aMessage [
-
 	| answer |
 	answer := aMessage interpretOn: self.
-	socket sendMessage: (self wrappedAnswerOf: answer ) asJsonString 
+	socket sendMessage: (self wrappedAnswerOf: answer) asJsonString
 ]
 
 { #category : #accessing }

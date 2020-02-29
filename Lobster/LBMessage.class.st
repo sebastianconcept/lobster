@@ -11,11 +11,12 @@ Class {
 }
 
 { #category : #accessing }
-LBMessage class >> for: aMessage [ 
+LBMessage class >> for: aMessage [
 	| payload |
-	payload := Json readFrom: aMessage readStream.
-	^ (self messageClassFor: payload type) on: payload 
-
+	[ payload := Json readFrom: aMessage readStream ]
+		on: Error
+		do: [ :x | ^ LBUnsupported on: aMessage ].
+	^ (self messageClassFor: payload type) on: payload
 ]
 
 { #category : #accessing }
@@ -24,7 +25,7 @@ LBMessage class >> messageClassFor: aMessageType [
 		detect: [ :messageClass | 
 			messageClass isAbstract not
 				and: [ messageClass selector = aMessageType ] ]
-		ifNone: [ self error: 'No message class found for ' , aMessageType asString ]
+		ifNone: [ LBUnsupported ]
 ]
 
 { #category : #accessing }

@@ -64,7 +64,13 @@ LBServer >> start [
 LBServer >> stop [
 	zinc
 		ifNotNil: [ zinc stop.
-			zinc := nil ]
+			zinc := nil.
+			views keys
+				do: [ :webSocket | 
+					[ webSocket close ]
+						on: Error
+						do: [ :x |  ] ].
+			views := nil ]
 ]
 
 { #category : #accessing }
