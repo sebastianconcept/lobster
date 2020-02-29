@@ -10,7 +10,15 @@ BaselineOfLobster >> baseline: spec [
 	spec
 		for: #common
 		do: [ self zinc: spec.
+			self json: spec.
 			spec package: 'Lobster' ]
+]
+
+{ #category : #baseline }
+BaselineOfLobster >> json: spec [
+	spec
+		baseline: 'JSONExtensions'
+		with: [ spec repository: 'github://sebastianconcept/JSONExtensions' ]
 ]
 
 { #category : #baseline }
