@@ -1,3 +1,10 @@
+"
+Main class for the Lobster project.
+
+From here it all starts/stops.
+
+I holds the server which will serve and delegate comunication between the UI and the models used to do everything with what's in the image.
+"
 Class {
 	#name : #Lobster,
 	#superclass : #Object,
@@ -13,6 +20,13 @@ Lobster class >> initializeServer [
 ]
 
 { #category : #accessing }
+Lobster class >> restart [
+	self
+		stop;
+		start
+]
+
+{ #category : #accessing }
 Lobster class >> server [
 	^ server ifNil: [ server := self initializeServer ]
 ]
@@ -20,12 +34,12 @@ Lobster class >> server [
 { #category : #accessing }
 Lobster class >> start [
 
-	LBLog log: 'Competent lobsters stands up straight with their shoulders back!'.
+	LBLog log: 'Starting to lobster this...'.
 	self server start
 ]
 
 { #category : #accessing }
 Lobster class >> stop [
-	LBLog log: 'A good lobster like you always keep your room clean'.
-	self server stop
+	LBLog log: 'Stopping lobster'.
+	server ifNotNil: [ self server stop ]
 ]

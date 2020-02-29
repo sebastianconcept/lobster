@@ -1,8 +1,13 @@
+"
+The server has the http WebSocket server and knows how to delegate messages to the right models.
+It keeps models of the connected views
+"
 Class {
 	#name : #LBServer,
 	#superclass : #Object,
 	#instVars : [
-		'zinc'
+		'zinc',
+		'views'
 	],
 	#category : #Lobster
 }
@@ -15,10 +20,38 @@ LBServer class >> port [
 ]
 
 { #category : #accessing }
+LBServer >> initializeViews [
+	^ views := Dictionary new
+]
+
+{ #category : #accessing }
 LBServer >> initializeZinc [
 	^ zinc := (ZnServer startOn: self class port)
-		delegate: (ZnWebSocketDelegate handler: self);
+		delegate:
+			(ZnWebSocketDelegate
+				handler: [ :webSocket | self onWebSocketConnected: webSocket ]);
 		yourself
+]
+
+{ #category : #reactions }
+LBServer >> onMessage: aMessageString from: aWebSocket [
+	"Receives aMessage from the connection with aWebSocket.
+	Makess the interpretation and sends a response."
+
+	| view message |
+	message := LBMessage for: aMessageString.
+	view := self views
+		at: aWebSocket
+		ifAbsentPut: [ LBModel fromMessage: message on: aWebSocket ].
+	view respondTo: message
+]
+
+{ #category : #reactions }
+LBServer >> onWebSocketConnected: aWebSocket [
+	^ [ aWebSocket
+		runWith: [ :message | self onMessage: message from: aWebSocket ] ]
+		on: ConnectionClosed
+		do: [ aWebSocket logGeneric: 'Ignoring connection close, done' ]
 ]
 
 { #category : #accessing }
@@ -35,17 +68,8 @@ LBServer >> stop [
 ]
 
 { #category : #accessing }
-LBServer >> value: aWebSocket [
-	^ [ :webSocket | 
-	[ webSocket
-		runWith: [ :message | 
-			webSocket
-				logGeneric: 'Received message: ' , message printString , ', echoing'.
-			LBLog log: 'Received message: ' , message printString.
-			webSocket sendMessage: 'Lobster says:' , message ] ]
-		on: ConnectionClosed
-		do: [ webSocket logGeneric: 'Ignoring connection close, done' ] ]
-		value: aWebSocket
+LBServer >> views [
+	^ views ifNil: [ views := self initializeViews ]
 ]
 
 { #category : #accessing }
