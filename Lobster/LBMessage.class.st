@@ -40,6 +40,11 @@ LBMessage class >> selector [
 		value: self name asString
 ]
 
+{ #category : #accessing }
+LBMessage >> id [
+	^ payload id
+]
+
 { #category : #actions }
 LBMessage >> initializeOn: aPayload [
 

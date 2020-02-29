@@ -70,8 +70,7 @@ LBModel >> respondTo: aMessage [
 
 	| answer |
 	answer := aMessage interpretOn: self.
-	self halt.
-	socket sendMailMessage: answer asString
+	socket sendMessage: (self wrappedAnswerOf: answer ) asJsonString 
 ]
 
 { #category : #accessing }
@@ -87,4 +86,9 @@ LBModel >> theme [
 { #category : #accessing }
 LBModel >> theme: anObject [
 	theme := anObject
+]
+
+{ #category : #accessing }
+LBModel >> wrappedAnswerOf: anAnswer [
+	^ {(#answer -> anAnswer asString)} asDictionary 
 ]

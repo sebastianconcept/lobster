@@ -8,6 +8,17 @@ Class {
 	#category : #Lobster
 }
 
+{ #category : #actions }
+LBHandshake >> interpretOn: aView [
+
+	^ true
+]
+
+{ #category : #accessing }
+LBHandshake >> theme [
+	^ payload theme
+]
+
 { #category : #accessing }
 LBHandshake >> viewType [
 	"Answers the symbol of the view type expected in a handshake message."
