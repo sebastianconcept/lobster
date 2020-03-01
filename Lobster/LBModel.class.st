@@ -7,7 +7,8 @@ Class {
 	#instVars : [
 		'id',
 		'socket',
-		'theme'
+		'theme',
+		'compilationContext'
 	],
 	#category : #Lobster
 }
@@ -48,8 +49,25 @@ LBModel class >> selector [
 ]
 
 { #category : #accessing }
+LBModel >> compilationContext [
+	^ compilationContext ifNil: [ self initializeCompilationContext ]
+]
+
+{ #category : #accessing }
+LBModel >> compilerOptions [
+	^ #(+ optionParseErrors + optionSkipSemanticWarnings)
+]
+
+{ #category : #accessing }
 LBModel >> id [
 	^ id
+]
+
+{ #category : #initialization }
+LBModel >> initializeCompilationContext [
+	^ compilationContext := CompilationContext new
+		setOptions: CompilationContext defaultOptions copy;
+		yourself
 ]
 
 { #category : #initialization }
@@ -66,10 +84,19 @@ LBModel >> initializeTheme [
 ]
 
 { #category : #accessing }
+LBModel >> interactive [
+
+	^ false
+]
+
+{ #category : #accessing }
 LBModel >> respondTo: aMessage [
 	| answer |
-	answer := aMessage interpretOn: self.
-	socket sendMessage: (self wrappedAnswerOf: answer) asJsonString
+	answer := [ aMessage interpretOn: self ]
+		on: Error
+		do: [ :x | x messageText ].
+	socket
+		sendMessage: (self wrappedAnswer: answer for: aMessage) asJsonString
 ]
 
 { #category : #accessing }
@@ -85,6 +112,12 @@ LBModel >> theme [
 { #category : #accessing }
 LBModel >> theme: anObject [
 	theme := anObject
+]
+
+{ #category : #accessing }
+LBModel >> wrappedAnswer: anAnswer for: aMessage [
+	^ {(#answer -> anAnswer asString).
+	(#messageType -> aMessage class selector)} asDictionary
 ]
 
 { #category : #accessing }

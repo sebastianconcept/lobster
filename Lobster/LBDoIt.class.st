@@ -9,11 +9,12 @@ Class {
 
 { #category : #actions }
 LBDoIt >> interpretOn: aView [
-	^ [ OpalCompiler new
-		source: self sourceCode;
-		evaluate ]
-		on: Error
-		do: [ :x | x messageText ]
+	^ OpalCompiler new
+		options: aView compilerOptions;
+		source: self sourceCode readStream;
+		requestor: aView;
+		compilationContext: aView compilationContext;
+		evaluate
 ]
 
 { #category : #actions }
