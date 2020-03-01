@@ -95,7 +95,8 @@ LBModel >> notify: errorString at: location in: aStream [
 	Raise a signal so that it can be ignored."
 
 	| errorMessage |
-	errorMessage := String new writeStreamDo: [ :stream | 
+	errorMessage := String new
+		writeStreamDo: [ :stream | 
 			stream
 				nextPutAll: errorString;
 				space;
