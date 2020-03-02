@@ -32,10 +32,27 @@ Lobster class >> server [
 ]
 
 { #category : #accessing }
+Lobster class >> shutDown: quiting [
+	quiting
+		ifTrue: [ self stop ]
+]
+
+{ #category : #accessing }
 Lobster class >> start [
 
 	LBLog log: 'Starting to lobster this...'.
 	self server start
+]
+
+{ #category : #accessing }
+Lobster class >> startUp: resuming [
+	resuming
+		ifTrue: [ self environment
+				at: #SessionManager
+				ifPresent: [ :manager | 
+					manager default currentSession
+						addDeferredStartupAction: [ self restart ] ]
+				ifAbsent: [ Smalltalk addDeferredStartupAction: [ self restart ] ] ]
 ]
 
 { #category : #accessing }
