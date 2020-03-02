@@ -8,7 +8,8 @@ Class {
 		'id',
 		'socket',
 		'theme',
-		'compilationContext'
+		'compilationContext',
+		'bindings'
 	],
 	#category : #Lobster
 }
@@ -49,18 +50,36 @@ LBModel class >> selector [
 ]
 
 { #category : #accessing }
+LBModel >> bindingOf: aString [
+	(self bindings includesKey: aString)
+		ifFalse: [ bindings add: (WorkspaceVariable key: aString asSymbol) ].
+	^ bindings associationAt: aString
+]
+
+{ #category : #accessing }
+LBModel >> bindings [
+	^ bindings ifNil: [ self initializeBindings ]
+]
+
+{ #category : #accessing }
 LBModel >> compilationContext [
 	^ compilationContext ifNil: [ self initializeCompilationContext ]
 ]
 
 { #category : #accessing }
 LBModel >> compilerOptions [
-	^ #(+ optionParseErrors + optionSkipSemanticWarnings)
+	^ #(+ optionParseErrors - optionSkipSemanticWarnings)
 ]
 
 { #category : #accessing }
 LBModel >> id [
 	^ id
+]
+
+{ #category : #accessing }
+LBModel >> initializeBindings [
+
+	^ bindings := Dictionary new
 ]
 
 { #category : #initialization }
@@ -85,6 +104,8 @@ LBModel >> initializeTheme [
 
 { #category : #accessing }
 LBModel >> interactive [
+	"As requestor of a compilation context, 
+	this tells the compiler that this isn't an interactive session."
 
 	^ false
 ]
@@ -121,6 +142,11 @@ LBModel >> respondTo: aMessage [
 		do: [ :x | x messageText ].
 	socket
 		sendMessage: (self wrappedAnswer: answer for: aMessage) asJsonString
+]
+
+{ #category : #accessing }
+LBModel >> setBindings: aDictionary [
+	bindings := aDictionary
 ]
 
 { #category : #accessing }

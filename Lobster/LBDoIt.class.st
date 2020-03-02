@@ -10,10 +10,12 @@ Class {
 { #category : #actions }
 LBDoIt >> interpretOn: aView [
 	^ OpalCompiler new
-		options: aView compilerOptions;
 		source: self sourceCode readStream;
+		context: nil;
+		receiver: nil;
 		requestor: aView;
-		compilationContext: aView compilationContext;
+		failBlock: [ Transcript cr; show: 'LBDoIt fail!';flush. ^nil ];
+		options: aView compilerOptions;
 		evaluate
 ]
 
