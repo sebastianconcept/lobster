@@ -4,7 +4,7 @@ This command evaluates the compiled code in the payload
 Class {
 	#name : #LBDoIt,
 	#superclass : #LBMessage,
-	#category : #Lobster
+	#category : #'Lobster-Protocol'
 }
 
 { #category : #actions }

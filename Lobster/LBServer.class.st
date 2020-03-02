@@ -7,9 +7,10 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'zinc',
-		'views'
+		'views',
+		'announcer'
 	],
-	#category : #Lobster
+	#category : #'Lobster-Core'
 }
 
 { #category : #accessing }
@@ -19,12 +20,28 @@ LBServer class >> port [
 	^ value asInteger ifNil: [ 1701 ] ifNotNil: [ value asInteger ]
 ]
 
+{ #category : #actions }
+LBServer >> announce: anAnnouncement [ 
+
+	^ self announcer announce: anAnnouncement 
+]
+
 { #category : #accessing }
+LBServer >> announcer [
+	^ announcer ifNil: [ self initializeAnnouncer ]
+]
+
+{ #category : #initialization }
+LBServer >> initializeAnnouncer [
+	^ announcer := Announcer new
+]
+
+{ #category : #initialization }
 LBServer >> initializeViews [
 	^ views := Dictionary new
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 LBServer >> initializeZinc [
 	^ zinc := (ZnServer startOn: self class port)
 		delegate:
@@ -42,7 +59,7 @@ LBServer >> onMessage: aMessageString from: aWebSocket [
 	message := LBMessage for: aMessageString.
 	view := self views
 		at: aWebSocket
-		ifAbsentPut: [ LBModel fromMessage: message on: aWebSocket ].
+		ifAbsentPut: [ LBModel fromMessage: message on: aWebSocket for: self].
 	view respondTo: message
 ]
 
@@ -54,19 +71,20 @@ LBServer >> onWebSocketConnected: aWebSocket [
 		do: [ aWebSocket logGeneric: 'Ignoring connection close, done' ]
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 LBServer >> start [
 	LBLog log: 'Lobster listening on ', self class port asString.
 	self zinc 
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 LBServer >> stop [
 	zinc
 		ifNotNil: [ zinc stop.
+			announcer := nil.
 			zinc := nil.
-			views keys
-				do: [ :webSocket | 
+			views
+				keysDo: [ :webSocket | 
 					[ webSocket close ]
 						on: Error
 						do: [ :x |  ] ].

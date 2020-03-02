@@ -1,5 +1,7 @@
 "
-This models the view that is connected on the UI side
+This models the view that is connected on the UI side.
+
+As typically Smalltalk tools do, I preserve the temp variables that get created from assignations to undefined literals. These will be made WorkspaceVariable and preserved in bindings.
 "
 Class {
 	#name : #LBModel,
@@ -8,10 +10,9 @@ Class {
 		'id',
 		'socket',
 		'theme',
-		'compilationContext',
 		'bindings'
 	],
-	#category : #Lobster
+	#category : #'Lobster-Models'
 }
 
 { #category : #accesing }
@@ -21,11 +22,11 @@ LBModel class >> defaultTheme [
 ]
 
 { #category : #'instance creation' }
-LBModel class >> fromMessage: aHandshakeMessage on: aWebSocket [
+LBModel class >> fromMessage: aHandshakeMessage on: aWebSocket for: aLBServer [
 	aHandshakeMessage class == LBHandshake
 		ifFalse: [ self error: 'A handshake message was expected' ].
 	^ (self modelFor: aHandshakeMessage viewType) new
-		initializeOn: aHandshakeMessage from: aWebSocket;
+		initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer;
 		yourself
 ]
 
@@ -62,11 +63,6 @@ LBModel >> bindings [
 ]
 
 { #category : #accessing }
-LBModel >> compilationContext [
-	^ compilationContext ifNil: [ self initializeCompilationContext ]
-]
-
-{ #category : #accessing }
 LBModel >> compilerOptions [
 	^ #(+ optionParseErrors - optionSkipSemanticWarnings)
 ]
@@ -76,28 +72,22 @@ LBModel >> id [
 	^ id
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 LBModel >> initializeBindings [
 
 	^ bindings := Dictionary new
 ]
 
 { #category : #initialization }
-LBModel >> initializeCompilationContext [
-	^ compilationContext := CompilationContext new
-		setOptions: CompilationContext defaultOptions copy;
-		yourself
-]
-
-{ #category : #initialization }
-LBModel >> initializeOn: aHandshakeMessage from: aWebSocket [
+LBModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	id := aHandshakeMessage id.
 	socket := aWebSocket.
 	aHandshakeMessage theme
-		ifNotNil: [ theme := aHandshakeMessage theme ]
+		ifNotNil: [ theme := aHandshakeMessage theme ].
+	self setObservationsOn: aLBServer
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 LBModel >> initializeTheme [
 	^ theme := self class defaultTheme
 ]
@@ -145,8 +135,19 @@ LBModel >> respondTo: aMessage [
 ]
 
 { #category : #accessing }
+LBModel >> send: aMessage [
+	socket sendMessage: (self wrappeMessage: aMessage) asJsonString
+]
+
+{ #category : #accessing }
 LBModel >> setBindings: aDictionary [
 	bindings := aDictionary
+]
+
+{ #category : #initialization }
+LBModel >> setObservationsOn: aLBServer [
+
+	"no-op by default"
 ]
 
 { #category : #accessing }
@@ -162,6 +163,12 @@ LBModel >> theme [
 { #category : #accessing }
 LBModel >> theme: anObject [
 	theme := anObject
+]
+
+{ #category : #accessing }
+LBModel >> wrappeMessage: aMessage [
+	^ {(#payload -> aMessage asPayload).
+	(#messageType -> aMessage class selector)} asDictionary
 ]
 
 { #category : #accessing }

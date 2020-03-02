@@ -4,7 +4,7 @@ This is to wrap any unsupported message
 Class {
 	#name : #LBUnsupported,
 	#superclass : #LBMessage,
-	#category : #Lobster
+	#category : #'Lobster-Protocol'
 }
 
 { #category : #actions }

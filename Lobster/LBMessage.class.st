@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'payload'
 	],
-	#category : #Lobster
+	#category : #'Lobster-Protocol'
 }
 
 { #category : #accessing }
@@ -39,6 +39,12 @@ LBMessage class >> on: aPayload [
 LBMessage class >> selector [
 	^ [ :string | string copyFrom: 3 to: string size ]
 		value: self name asString
+]
+
+{ #category : #converting }
+LBMessage >> asPayload [
+
+	self subclassResponsibility 
 ]
 
 { #category : #accessing }
