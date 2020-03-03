@@ -83,11 +83,7 @@ LBServer >> stop [
 		ifNotNil: [ zinc stop.
 			announcer := nil.
 			zinc := nil.
-			views
-				keysDo: [ :webSocket | 
-					[ webSocket close ]
-						on: Error
-						do: [ :x |  ] ].
+			views ifNotNil: [ views valuesDo: [ :view | view close ] ].
 			views := nil ]
 ]
 

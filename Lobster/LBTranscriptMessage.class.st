@@ -11,9 +11,9 @@ Class {
 }
 
 { #category : #accessing }
-LBTranscriptMessage class >> on: aString [
+LBTranscriptMessage class >> on: anLBTranscriptSignal [
 	^ self new
-		message: aString;
+		initializeOn: anLBTranscriptSignal;
 		yourself
 ]
 
@@ -24,11 +24,12 @@ LBTranscriptMessage >> asPayload [
 ]
 
 { #category : #accessing }
-LBTranscriptMessage >> message [
-	^ message
+LBTranscriptMessage >> initializeOn: anLBTranscriptSignal [
+
+	message := anLBTranscriptSignal message
 ]
 
 { #category : #accessing }
-LBTranscriptMessage >> message: anObject [
-	message := anObject
+LBTranscriptMessage >> message [
+	^ message
 ]

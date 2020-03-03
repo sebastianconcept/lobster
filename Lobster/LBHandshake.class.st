@@ -11,6 +11,8 @@ Class {
 { #category : #actions }
 LBHandshake >> interpretOn: aView [
 
+	aView onOpened.
+
 	^ true
 ]
 

@@ -62,6 +62,17 @@ LBModel >> bindings [
 	^ bindings ifNil: [ self initializeBindings ]
 ]
 
+{ #category : #actions }
+LBModel >> close [
+
+	bindings ifNotNil:[
+		bindings := nil].
+	socket
+		ifNotNil: [ socket isConnected
+				ifTrue: [ socket close ].
+			socket := nil ].
+]
+
 { #category : #accessing }
 LBModel >> compilerOptions [
 	^ #(+ optionParseErrors - optionSkipSemanticWarnings)
@@ -125,6 +136,18 @@ LBModel >> notify: errorString at: location in: aStream [
 ]
 
 { #category : #accessing }
+LBModel >> onClosed [
+
+	self halt
+]
+
+{ #category : #accessing }
+LBModel >> onOpened [
+
+	"no-op by default"
+]
+
+{ #category : #accessing }
 LBModel >> respondTo: aMessage [
 	| answer |
 	answer := [ aMessage interpretOn: self ]
@@ -136,7 +159,10 @@ LBModel >> respondTo: aMessage [
 
 { #category : #accessing }
 LBModel >> send: aMessage [
-	socket sendMessage: (self wrappeMessage: aMessage) asJsonString
+
+	socket isConnected
+		ifFalse: [ self error: 'Trying to send a message over a disconnected socket' ]
+		ifTrue: [ socket sendMessage: (self wrappeMessage: aMessage) asJsonString ]
 ]
 
 { #category : #accessing }
