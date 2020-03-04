@@ -8,14 +8,18 @@ Class {
 }
 
 { #category : #actions }
-LBDoIt >> interpretOn: aView [
+LBDoIt >> interpretOn: aViewModel [
 	^ OpalCompiler new
 		source: self sourceCode readStream;
 		context: nil;
 		receiver: nil;
-		requestor: aView;
-		failBlock: [ Transcript cr; show: 'LBDoIt fail!';flush. ^nil ];
-		options: aView compilerOptions;
+		requestor: aViewModel;
+		failBlock: [ Transcript
+				cr;
+				show: 'LBDoIt fail!';
+				flush.
+			^ nil ];
+		options: aViewModel compilerOptions;
 		evaluate
 ]
 

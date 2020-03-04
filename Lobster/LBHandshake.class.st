@@ -9,9 +9,9 @@ Class {
 }
 
 { #category : #actions }
-LBHandshake >> interpretOn: aView [
+LBHandshake >> interpretOn: aViewModel [
 
-	aView onOpened.
+	aViewModel onOpened.
 
 	^ true
 ]

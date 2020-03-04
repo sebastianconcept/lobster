@@ -4,7 +4,7 @@ This models the view that is connected on the UI side.
 As typically Smalltalk tools do, I preserve the temp variables that get created from assignations to undefined literals. These will be made WorkspaceVariable and preserved in bindings.
 "
 Class {
-	#name : #LBModel,
+	#name : #LBViewModel,
 	#superclass : #Object,
 	#instVars : [
 		'id',
@@ -16,13 +16,13 @@ Class {
 }
 
 { #category : #accesing }
-LBModel class >> defaultTheme [
+LBViewModel class >> defaultTheme [
 
 	^ #minimal
 ]
 
 { #category : #'instance creation' }
-LBModel class >> fromMessage: aHandshakeMessage on: aWebSocket for: aLBServer [
+LBViewModel class >> fromMessage: aHandshakeMessage on: aWebSocket for: aLBServer [
 	aHandshakeMessage class == LBHandshake
 		ifFalse: [ self error: 'A handshake message was expected' ].
 	^ (self modelFor: aHandshakeMessage viewType) new
@@ -31,13 +31,13 @@ LBModel class >> fromMessage: aHandshakeMessage on: aWebSocket for: aLBServer [
 ]
 
 { #category : #accesing }
-LBModel class >> isAbstract [
+LBViewModel class >> isAbstract [
 
-	^ self == LBModel
+	^ self == LBViewModel
 ]
 
 { #category : #accesing }
-LBModel class >> modelFor: aViewType [
+LBViewModel class >> modelFor: aViewType [
 	^ self subclasses
 		detect:
 			[ :modelClass | modelClass isAbstract not and: [ modelClass selector = aViewType ] ]
@@ -45,52 +45,56 @@ LBModel class >> modelFor: aViewType [
 ]
 
 { #category : #accesing }
-LBModel class >> selector [
+LBViewModel class >> selector [
 	^ [ :string | string copyFrom: 3 to: string size ]
 		value: self name asString
 ]
 
 { #category : #accessing }
-LBModel >> bindingOf: aString [
+LBViewModel >> bindingOf: aString [
 	(self bindings includesKey: aString)
 		ifFalse: [ bindings add: (WorkspaceVariable key: aString asSymbol) ].
 	^ bindings associationAt: aString
 ]
 
 { #category : #accessing }
-LBModel >> bindings [
+LBViewModel >> bindings [
 	^ bindings ifNil: [ self initializeBindings ]
 ]
 
 { #category : #actions }
-LBModel >> close [
+LBViewModel >> close [
+	bindings ifNotNil: [ bindings := nil ].
+	self closeSocket.
+	self triggerEvent: #viewClosed
+]
 
-	bindings ifNotNil:[
-		bindings := nil].
+{ #category : #actions }
+LBViewModel >> closeSocket [
 	socket
 		ifNotNil: [ socket isConnected
 				ifTrue: [ socket close ].
-			socket := nil ].
+			socket := nil ]
 ]
 
 { #category : #accessing }
-LBModel >> compilerOptions [
+LBViewModel >> compilerOptions [
 	^ #(+ optionParseErrors - optionSkipSemanticWarnings)
 ]
 
 { #category : #accessing }
-LBModel >> id [
+LBViewModel >> id [
 	^ id
 ]
 
 { #category : #initialization }
-LBModel >> initializeBindings [
+LBViewModel >> initializeBindings [
 
 	^ bindings := Dictionary new
 ]
 
 { #category : #initialization }
-LBModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
+LBViewModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	id := aHandshakeMessage id.
 	socket := aWebSocket.
 	aHandshakeMessage theme
@@ -99,12 +103,12 @@ LBModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 ]
 
 { #category : #initialization }
-LBModel >> initializeTheme [
+LBViewModel >> initializeTheme [
 	^ theme := self class defaultTheme
 ]
 
 { #category : #accessing }
-LBModel >> interactive [
+LBViewModel >> interactive [
 	"As requestor of a compilation context, 
 	this tells the compiler that this isn't an interactive session."
 
@@ -112,7 +116,7 @@ LBModel >> interactive [
 ]
 
 { #category : #accessing }
-LBModel >> notify: errorString at: location in: aStream [
+LBViewModel >> notify: errorString at: location in: aStream [
 	"A syntax error happened when I was trying to highlight my pc. 
 	Raise a signal so that it can be ignored."
 
@@ -135,30 +139,20 @@ LBModel >> notify: errorString at: location in: aStream [
 	self error: errorMessage contents
 ]
 
-{ #category : #accessing }
-LBModel >> onClosed [
+{ #category : #reactions }
+LBViewModel >> onClosed [
 
-	self halt
+
 ]
 
-{ #category : #accessing }
-LBModel >> onOpened [
+{ #category : #reactions }
+LBViewModel >> onOpened [
 
 	"no-op by default"
 ]
 
 { #category : #accessing }
-LBModel >> respondTo: aMessage [
-	| answer |
-	answer := [ aMessage interpretOn: self ]
-		on: Error
-		do: [ :x | x messageText ].
-	socket
-		sendMessage: (self wrappedAnswer: answer for: aMessage) asJsonString
-]
-
-{ #category : #accessing }
-LBModel >> send: aMessage [
+LBViewModel >> send: aMessage [
 
 	socket isConnected
 		ifFalse: [ self error: 'Trying to send a message over a disconnected socket' ]
@@ -166,44 +160,53 @@ LBModel >> send: aMessage [
 ]
 
 { #category : #accessing }
-LBModel >> setBindings: aDictionary [
+LBViewModel >> sendMessage: aJsonString [
+
+	^ self socket sendMessage: aJsonString 
+]
+
+{ #category : #accessing }
+LBViewModel >> setBindings: aDictionary [
 	bindings := aDictionary
 ]
 
 { #category : #initialization }
-LBModel >> setObservationsOn: aLBServer [
-
-	"no-op by default"
+LBViewModel >> setObservationsOn: aLBServer [
+	self
+		when: #viewClosed
+		send: #onViewClosed:socket:
+		to: aLBServer
+		withArguments: {self. socket}
 ]
 
 { #category : #accessing }
-LBModel >> socket [
+LBViewModel >> socket [
 	^ socket
 ]
 
 { #category : #accessing }
-LBModel >> theme [
+LBViewModel >> theme [
 	^ theme ifNil: [ self initializeTheme ]
 ]
 
 { #category : #accessing }
-LBModel >> theme: anObject [
+LBViewModel >> theme: anObject [
 	theme := anObject
 ]
 
 { #category : #accessing }
-LBModel >> wrappeMessage: aMessage [
+LBViewModel >> wrappeMessage: aMessage [
 	^ {(#payload -> aMessage asPayload).
 	(#messageType -> aMessage class selector)} asDictionary
 ]
 
 { #category : #accessing }
-LBModel >> wrappedAnswer: anAnswer for: aMessage [
+LBViewModel >> wrappedAnswer: anAnswer for: aMessage [
 	^ {(#answer -> anAnswer asString).
 	(#messageType -> aMessage class selector)} asDictionary
 ]
 
 { #category : #accessing }
-LBModel >> wrappedAnswerOf: anAnswer [
+LBViewModel >> wrappedAnswerOf: anAnswer [
 	^ {(#answer -> anAnswer asString)} asDictionary 
 ]

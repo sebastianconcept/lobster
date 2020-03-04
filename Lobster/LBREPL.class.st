@@ -3,6 +3,6 @@ A traditional REPL
 "
 Class {
 	#name : #LBREPL,
-	#superclass : #LBModel,
+	#superclass : #LBViewModel,
 	#category : #'Lobster-Models'
 }

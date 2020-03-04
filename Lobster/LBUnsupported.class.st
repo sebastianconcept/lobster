@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #actions }
-LBUnsupported >> interpretOn: aView [
+LBUnsupported >> interpretOn: aViewModel [
 	^ {(#error -> ('Unsupported message: "' , payload asString , '"'))}
 		asDictionary asJsonString
 ]

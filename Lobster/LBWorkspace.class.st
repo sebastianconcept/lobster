@@ -3,6 +3,6 @@ A model for the Worspace tool
 "
 Class {
 	#name : #LBWorkspace,
-	#superclass : #LBModel,
+	#superclass : #LBViewModel,
 	#category : #'Lobster-Models'
 }

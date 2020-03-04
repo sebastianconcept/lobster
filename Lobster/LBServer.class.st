@@ -59,16 +59,39 @@ LBServer >> onMessage: aMessageString from: aWebSocket [
 	message := LBMessage for: aMessageString.
 	view := self views
 		at: aWebSocket
-		ifAbsentPut: [ LBModel fromMessage: message on: aWebSocket for: self].
-	view respondTo: message
+		ifAbsentPut: [ LBViewModel fromMessage: message on: aWebSocket for: self ].
+	message sentTo: view
+]
+
+{ #category : #reactions }
+LBServer >> onSocketClosed: aWebSocket [
+	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ]
+]
+
+{ #category : #reactions }
+LBServer >> onViewClosed: aViewModel socket: aWebSocket [
+	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ]
 ]
 
 { #category : #reactions }
 LBServer >> onWebSocketConnected: aWebSocket [
-	^ [ aWebSocket
-		runWith: [ :message | self onMessage: message from: aWebSocket ] ]
+	^ self
+		run: aWebSocket
+		with: [ :message | self onMessage: message from: aWebSocket ]
+]
+
+{ #category : #reactions }
+LBServer >> run: aWebSocket with: aBlock [
+	^ [ [ | message |
+	message := nil.
+	[ aWebSocket isConnected
+		ifTrue: [ message := aWebSocket readMessage ]
+		ifFalse: [ ConnectionClosed signal ] ]
+		on: ConnectionTimedOut
+		do: [ "Ignore & continue" aWebSocket ping ].
+	message ifNotNil: [ aBlock value: message ] ] repeat ]
 		on: ConnectionClosed
-		do: [ aWebSocket logGeneric: 'Ignoring connection close, done' ]
+		do: [ :x | self onSocketClosed: aWebSocket ]
 ]
 
 { #category : #actions }

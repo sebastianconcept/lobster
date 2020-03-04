@@ -8,9 +8,18 @@ Class {
 }
 
 { #category : #actions }
-LBViewClosed >> interpretOn: aView [
+LBViewClosed >> interpretOn: aViewModel [
 
-	aView onClosed.
+	aViewModel onClosed.
 	
 	^ true
+]
+
+{ #category : #actions }
+LBViewClosed >> sentTo: aViewModel [
+
+	[self interpretOn: aViewModel ]
+		on: Error
+		do: [ :x | Transcript crShow: x messageText ].
+	
 ]

@@ -3,7 +3,7 @@ A model for the Transcript
 "
 Class {
 	#name : #LBTranscript,
-	#superclass : #LBModel,
+	#superclass : #LBViewModel,
 	#instVars : [
 		'logger'
 	],
@@ -13,9 +13,11 @@ Class {
 { #category : #reactions }
 LBTranscript >> close [
 
-	super close.
 	logger ifNotNil: [ logger stop ].
-	logger := nil
+	logger := nil.
+	
+	super close.
+
 ]
 
 { #category : #initialization }
@@ -50,6 +52,9 @@ LBTranscript >> onOpened [
 
 { #category : #initialization }
 LBTranscript >> setObservationsOn: aLBServer [
+	
+	super setObservationsOn: aLBServer.
+
 	aLBServer announcer
 		when: LBTranscriptSignal
 		do: [ :ann | self send: (LBTranscriptMessage on: ann message) ]
