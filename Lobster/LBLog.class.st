@@ -4,7 +4,7 @@ A logging helper
 Class {
 	#name : #LBLog,
 	#superclass : #Object,
-	#category : #Lobster
+	#category : #'Lobster-Helpers'
 }
 
 { #category : #'instance creation' }

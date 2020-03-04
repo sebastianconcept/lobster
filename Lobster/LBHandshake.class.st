@@ -5,11 +5,13 @@ It should have the information that we need in order to create the right type of
 Class {
 	#name : #LBHandshake,
 	#superclass : #LBMessage,
-	#category : #Lobster
+	#category : #'Lobster-Protocol'
 }
 
 { #category : #actions }
-LBHandshake >> interpretOn: aView [
+LBHandshake >> interpretOn: aViewModel [
+
+	aViewModel onOpened.
 
 	^ true
 ]

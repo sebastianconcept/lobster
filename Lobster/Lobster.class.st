@@ -11,7 +11,7 @@ Class {
 	#classInstVars : [
 		'server'
 	],
-	#category : #Lobster
+	#category : #'Lobster-Core'
 }
 
 { #category : #accessing }

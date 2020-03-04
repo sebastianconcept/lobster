@@ -7,9 +7,10 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'zinc',
-		'views'
+		'views',
+		'announcer'
 	],
-	#category : #Lobster
+	#category : #'Lobster-Core'
 }
 
 { #category : #accessing }
@@ -19,12 +20,28 @@ LBServer class >> port [
 	^ value asInteger ifNil: [ 1701 ] ifNotNil: [ value asInteger ]
 ]
 
+{ #category : #actions }
+LBServer >> announce: anAnnouncement [ 
+
+	^ self announcer announce: anAnnouncement 
+]
+
 { #category : #accessing }
+LBServer >> announcer [
+	^ announcer ifNil: [ self initializeAnnouncer ]
+]
+
+{ #category : #initialization }
+LBServer >> initializeAnnouncer [
+	^ announcer := Announcer new
+]
+
+{ #category : #initialization }
 LBServer >> initializeViews [
 	^ views := Dictionary new
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 LBServer >> initializeZinc [
 	^ zinc := (ZnServer startOn: self class port)
 		delegate:
@@ -42,34 +59,54 @@ LBServer >> onMessage: aMessageString from: aWebSocket [
 	message := LBMessage for: aMessageString.
 	view := self views
 		at: aWebSocket
-		ifAbsentPut: [ LBModel fromMessage: message on: aWebSocket ].
-	view respondTo: message
+		ifAbsentPut: [ LBViewModel fromMessage: message on: aWebSocket for: self ].
+	message sentTo: view
+]
+
+{ #category : #reactions }
+LBServer >> onSocketClosed: aWebSocket [
+	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ]
+]
+
+{ #category : #reactions }
+LBServer >> onViewClosed: aViewModel socket: aWebSocket [
+	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ]
 ]
 
 { #category : #reactions }
 LBServer >> onWebSocketConnected: aWebSocket [
-	^ [ aWebSocket
-		runWith: [ :message | self onMessage: message from: aWebSocket ] ]
-		on: ConnectionClosed
-		do: [ aWebSocket logGeneric: 'Ignoring connection close, done' ]
+	^ self
+		run: aWebSocket
+		with: [ :message | self onMessage: message from: aWebSocket ]
 ]
 
-{ #category : #accessing }
+{ #category : #reactions }
+LBServer >> run: aWebSocket with: aBlock [
+	^ [ [ | message |
+	message := nil.
+	[ aWebSocket isConnected
+		ifTrue: [ message := aWebSocket readMessage ]
+		ifFalse: [ ConnectionClosed signal ] ]
+		on: ConnectionTimedOut
+		do: [ "Ignore & continue" aWebSocket ping ].
+	message ifNotNil: [ aBlock value: message ] ] repeat ]
+		on: ConnectionClosed
+		do: [ :x | self onSocketClosed: aWebSocket ]
+]
+
+{ #category : #actions }
 LBServer >> start [
 	LBLog log: 'Lobster listening on ', self class port asString.
 	self zinc 
 ]
 
-{ #category : #accessing }
+{ #category : #actions }
 LBServer >> stop [
 	zinc
 		ifNotNil: [ zinc stop.
+			announcer := nil.
 			zinc := nil.
-			views keys
-				do: [ :webSocket | 
-					[ webSocket close ]
-						on: Error
-						do: [ :x |  ] ].
+			views ifNotNil: [ views valuesDo: [ :view | view close ] ].
 			views := nil ]
 ]
 

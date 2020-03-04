@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'payload'
 	],
-	#category : #Lobster
+	#category : #'Lobster-Protocol'
 }
 
 { #category : #accessing }
@@ -21,6 +21,7 @@ LBMessage class >> for: aMessage [
 
 { #category : #accessing }
 LBMessage class >> messageClassFor: aMessageType [
+
 	^ self subclasses
 		detect: [ :messageClass | 
 			messageClass isAbstract not
@@ -41,6 +42,12 @@ LBMessage class >> selector [
 		value: self name asString
 ]
 
+{ #category : #converting }
+LBMessage >> asPayload [
+
+	self subclassResponsibility 
+]
+
 { #category : #accessing }
 LBMessage >> id [
 	^ payload id
@@ -56,4 +63,21 @@ LBMessage >> initializeOn: aPayload [
 LBMessage >> interpretOn: aView [
 
 	self subclassResponsibility 
+]
+
+{ #category : #actions }
+LBMessage >> sentTo: aViewModel [
+
+	| answer |
+	answer := [ self interpretOn: aViewModel ]
+		on: Error
+		do: [ :x | x messageText ].
+	"Send a response:"
+	aViewModel sendMessage: (self wrappedAnswer: answer) asJsonString	
+]
+
+{ #category : #accessing }
+LBMessage >> wrappedAnswer: anAnswer [
+	^ {(#answer -> anAnswer asString).
+	(#messageType -> self class selector)} asDictionary
 ]
