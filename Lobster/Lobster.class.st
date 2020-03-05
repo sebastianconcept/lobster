@@ -45,7 +45,7 @@ Lobster class >> shutDown: quiting [
 
 { #category : #accessing }
 Lobster class >> start [
-
+	self installTranscript.
 	LBLog log: 'Starting to lobster this...'.
 	self server start
 ]
@@ -58,7 +58,6 @@ Lobster class >> startUp: resuming [
 				ifPresent: [ :manager | 
 					manager default currentSession
 						addDeferredStartupAction: [ 
-							self installTranscript.
 							self restart ] ]
 				ifAbsent: [ Smalltalk addDeferredStartupAction: [ self restart ] ] ]
 ]

@@ -75,6 +75,7 @@ LBServer >> onViewClosed: aViewModel socket: aWebSocket [
 
 { #category : #reactions }
 LBServer >> onWebSocketConnected: aWebSocket [
+
 	^ self
 		run: aWebSocket
 		with: [ :message | self onMessage: message from: aWebSocket ]
