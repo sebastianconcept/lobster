@@ -22,7 +22,7 @@ LBMessage class >> for: aMessage [
 { #category : #accessing }
 LBMessage class >> messageClassFor: aMessageType [
 
-	^ self subclasses
+	^ self allSubclasses
 		detect: [ :messageClass | 
 			messageClass isAbstract not
 				and: [ messageClass selector = aMessageType ] ]
