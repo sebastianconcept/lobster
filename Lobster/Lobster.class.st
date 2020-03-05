@@ -20,6 +20,12 @@ Lobster class >> initializeServer [
 ]
 
 { #category : #accessing }
+Lobster class >> installTranscript [
+	Transcript class == LBSystemTranscript 
+		ifFalse: [ LBSystemTranscript install ]
+]
+
+{ #category : #accessing }
 Lobster class >> restart [
 	self
 		stop;
@@ -51,7 +57,9 @@ Lobster class >> startUp: resuming [
 				at: #SessionManager
 				ifPresent: [ :manager | 
 					manager default currentSession
-						addDeferredStartupAction: [ self restart ] ]
+						addDeferredStartupAction: [ 
+							self installTranscript.
+							self restart ] ]
 				ifAbsent: [ Smalltalk addDeferredStartupAction: [ self restart ] ] ]
 ]
 
