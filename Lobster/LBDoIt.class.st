@@ -9,18 +9,16 @@ Class {
 
 { #category : #actions }
 LBDoIt >> interpretOn: aViewModel [
-	^ OpalCompiler new
+	^ [ OpalCompiler new
 		source: self sourceCode readStream;
 		context: nil;
 		receiver: nil;
 		requestor: aViewModel;
-		failBlock: [ Transcript
-				cr;
-				show: 'LBDoIt fail!';
-				flush.
-			^ nil ];
+		failBlock: [ ^ nil ];
 		options: aViewModel compilerOptions;
-		evaluate
+		evaluate ]
+		on: SyntaxErrorNotification
+		do: [ :x | x messageText ]
 ]
 
 { #category : #actions }

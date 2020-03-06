@@ -115,30 +115,6 @@ LBViewModel >> interactive [
 	^ false
 ]
 
-{ #category : #accessing }
-LBViewModel >> notify: errorString at: location in: aStream [
-	"A syntax error happened when I was trying to highlight my pc. 
-	Raise a signal so that it can be ignored."
-
-	| errorMessage |
-	errorMessage := String new
-		writeStreamDo: [ :stream | 
-			stream
-				nextPutAll: errorString;
-				space;
-				nextPutAll: 'at';
-				space;
-				nextPutAll: location asString;
-				space;
-				nextPutAll: 'in:';
-				space;
-				nextPut: $";
-				nextPutAll: aStream contents;
-				nextPut: $";
-				yourself ].
-	self error: errorMessage contents
-]
-
 { #category : #reactions }
 LBViewModel >> onClosed [
 
