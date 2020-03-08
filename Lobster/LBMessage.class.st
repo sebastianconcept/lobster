@@ -67,13 +67,12 @@ LBMessage >> interpretOn: aView [
 
 { #category : #actions }
 LBMessage >> sentTo: aViewModel [
-
 	| answer |
 	answer := [ self interpretOn: aViewModel ]
 		on: Error
 		do: [ :x | x messageText ].
 	"Send a response:"
-	aViewModel sendMessage: (self wrappedAnswer: answer)	asJsonString 
+	aViewModel sendMessage: (self wrappedAnswer: answer) asJsonString
 ]
 
 { #category : #accessing }

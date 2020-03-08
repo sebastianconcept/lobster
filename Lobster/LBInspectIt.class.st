@@ -10,9 +10,17 @@ Class {
 
 { #category : #actions }
 LBInspectIt >> basicInterpretOn: aViewModel [
-	
-	| subject |
-	subject := super basicInterpretOn: aViewModel.
-	aViewModel inspectee: subject.
-	^ subject 
+	| id inspectee |
+	id := UUID new asString.
+	inspectee := super basicInterpretOn: aViewModel.
+	aViewModel inspectees at: id put: inspectee.
+	^ {(#inspectee -> inspectee printString).
+	(#id -> id)} asDictionary asJsonString 
+]
+
+{ #category : #actions }
+LBInspectIt >> wrappedAnswer: anAnswer [
+	^ {(#answer -> anAnswer).
+	(#messageType -> self class selector)} asDictionary
+
 ]
