@@ -4,5 +4,5 @@ A model for the Worspace tool
 Class {
 	#name : #LBWorkspace,
 	#superclass : #LBViewModel,
-	#category : #'Lobster-Models'
+	#category : #'Lobster-ViewModels'
 }

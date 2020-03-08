@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'logger'
 	],
-	#category : #'Lobster-Models'
+	#category : #'Lobster-ViewModels'
 }
 
 { #category : #reactions }

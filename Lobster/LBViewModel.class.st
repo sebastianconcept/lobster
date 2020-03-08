@@ -1,5 +1,5 @@
 "
-This models the view that is connected on the UI side.
+Views on the UI frontend will be connected to instances of ViewModels here in the server side.
 
 As typically Smalltalk tools do, I preserve the temp variables that get created from assignations to undefined literals. These will be made WorkspaceVariable and preserved in bindings.
 "
@@ -12,7 +12,7 @@ Class {
 		'theme',
 		'bindings'
 	],
-	#category : #'Lobster-Models'
+	#category : #'Lobster-ViewModels'
 }
 
 { #category : #accesing }
