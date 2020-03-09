@@ -66,7 +66,7 @@ LBViewModel >> bindings [
 LBViewModel >> close [
 	bindings ifNotNil: [ bindings := nil ].
 	self closeSocket.
-	self triggerEvent: #viewClosed
+
 ]
 
 { #category : #actions }
@@ -99,7 +99,7 @@ LBViewModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	socket := aWebSocket.
 	aHandshakeMessage theme
 		ifNotNil: [ theme := aHandshakeMessage theme ].
-	self setObservationsOn: aLBServer
+	"aLBServer observeViewModel: self with: aWebSocket "
 ]
 
 { #category : #initialization }
@@ -117,14 +117,14 @@ LBViewModel >> interactive [
 
 { #category : #reactions }
 LBViewModel >> onClosed [
-
-
+	self close.
+	self triggerEvent: #viewClosed
 ]
 
 { #category : #reactions }
 LBViewModel >> onOpened [
 
-	"no-op by default"
+	self triggerEvent: #viewOpened
 ]
 
 { #category : #accessing }
@@ -144,15 +144,6 @@ LBViewModel >> sendMessage: aJsonString [
 { #category : #accessing }
 LBViewModel >> setBindings: aDictionary [
 	bindings := aDictionary
-]
-
-{ #category : #initialization }
-LBViewModel >> setObservationsOn: aLBServer [
-	self
-		when: #viewClosed
-		send: #onViewClosed:socket:
-		to: aLBServer
-		withArguments: {self. socket}
 ]
 
 { #category : #accessing }

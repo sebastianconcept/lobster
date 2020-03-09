@@ -25,15 +25,18 @@ LBTranscript >> initializeLogger [
 	^ logger := LBTranscriptLogger on: self
 ]
 
+{ #category : #initialization }
+LBTranscript >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
+	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
+
+	aLBServer announcer
+		when: LBTranscriptSignal
+		do: [ :ann | self send: (LBTranscriptMessage on: ann message) ]
+]
+
 { #category : #accessing }
 LBTranscript >> logger [
 	^ logger ifNil: [ self initializeLogger ]
-]
-
-{ #category : #reactions }
-LBTranscript >> onClosed [
-	super onClosed.
-	self close
 ]
 
 { #category : #reactions }
@@ -48,14 +51,4 @@ LBTranscript >> onOpened [
 	super onOpened.
 	
 	self logger start
-]
-
-{ #category : #initialization }
-LBTranscript >> setObservationsOn: aLBServer [
-	
-	super setObservationsOn: aLBServer.
-
-	aLBServer announcer
-		when: LBTranscriptSignal
-		do: [ :ann | self send: (LBTranscriptMessage on: ann message) ]
 ]

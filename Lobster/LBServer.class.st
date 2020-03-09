@@ -50,6 +50,43 @@ LBServer >> initializeZinc [
 		yourself
 ]
 
+{ #category : #actions }
+LBServer >> observeInspector: aLBInspector [
+	aLBInspector
+		when: #viewOpened
+			send: #onInspectorOpened:
+			to: self
+			with: aLBInspector;
+		when: #viewClosed
+			send: #onInspectorClosed:
+			to: self
+			with: aLBInspector;
+		yourself
+]
+
+{ #category : #actions }
+LBServer >> observeViewModel: aViewModel with: aWebSocket [
+	aViewModel
+		when: #viewClosed
+		send: #onViewClosed:socket:
+		to: self
+		withArguments:
+			{aViewModel.
+			aWebSocket}
+]
+
+{ #category : #reactions }
+LBServer >> onInspectorClosed: aLBInspector [
+
+	self triggerEvent: #inspectorClosed: with: aLBInspector
+]
+
+{ #category : #reactions }
+LBServer >> onInspectorOpened: aLBInspector [
+
+	self triggerEvent: #inspectorOpened: with: aLBInspector
+]
+
 { #category : #reactions }
 LBServer >> onMessage: aMessageString from: aWebSocket [
 	"Receives aMessage from the connection with aWebSocket.
@@ -70,7 +107,10 @@ LBServer >> onSocketClosed: aWebSocket [
 
 { #category : #reactions }
 LBServer >> onViewClosed: aViewModel socket: aWebSocket [
-	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ]
+
+	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ].
+	
+	aViewModel removeDependent: self
 ]
 
 { #category : #reactions }
