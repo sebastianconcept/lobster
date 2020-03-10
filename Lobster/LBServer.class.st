@@ -75,6 +75,20 @@ LBServer >> observeViewModel: aViewModel with: aWebSocket [
 			aWebSocket}
 ]
 
+{ #category : #actions }
+LBServer >> observeWorkspace: aLBWorkspace [
+	aLBWorkspace
+		when: #viewOpened
+			send: #onWorkspaceOpened:
+			to: self
+			with: aLBWorkspace;
+		when: #viewClosed
+			send: #onWorkspaceClosed:
+			to: self
+			with: aLBWorkspace;
+		yourself
+]
+
 { #category : #reactions }
 LBServer >> onInspectorClosed: aLBInspector [
 

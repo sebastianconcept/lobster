@@ -8,6 +8,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
+		'name',
 		'socket',
 		'theme',
 		'bindings'
@@ -51,6 +52,12 @@ LBViewModel class >> selector [
 ]
 
 { #category : #accessing }
+LBViewModel >> addBindings: someBindings [
+	
+	self flag: #toBeImplemented
+]
+
+{ #category : #accessing }
 LBViewModel >> bindingOf: aString [
 	(self bindings includesKey: aString)
 		ifFalse: [ bindings add: (WorkspaceVariable key: aString asSymbol) ].
@@ -83,6 +90,14 @@ LBViewModel >> compilerOptions [
 ]
 
 { #category : #accessing }
+LBViewModel >> getViewModelFrom: spec [
+	^ Lobster server views values
+		detect: [ :each | each id = spec id ]
+		ifNone: [ self
+				error: 'ViewModel not found: ' , spec id , ' (' , spec name , ')' ]
+]
+
+{ #category : #accessing }
 LBViewModel >> id [
 	^ id
 ]
@@ -96,10 +111,10 @@ LBViewModel >> initializeBindings [
 { #category : #initialization }
 LBViewModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	id := aHandshakeMessage id.
+	name := aHandshakeMessage name.
 	socket := aWebSocket.
 	aHandshakeMessage theme
-		ifNotNil: [ theme := aHandshakeMessage theme ].
-	"aLBServer observeViewModel: self with: aWebSocket "
+		ifNotNil: [ theme := aHandshakeMessage theme ]
 ]
 
 { #category : #initialization }
@@ -115,6 +130,11 @@ LBViewModel >> interactive [
 	^ false
 ]
 
+{ #category : #accessing }
+LBViewModel >> name [
+	^ name
+]
+
 { #category : #reactions }
 LBViewModel >> onClosed [
 	self close.
@@ -125,6 +145,12 @@ LBViewModel >> onClosed [
 LBViewModel >> onOpened [
 
 	self triggerEvent: #viewOpened
+]
+
+{ #category : #accessing }
+LBViewModel >> replaceBindings: someBindings [
+	
+	self flag: #toBeImplemented
 ]
 
 { #category : #accessing }

@@ -17,6 +17,11 @@ LBHandshake >> interpretOn: aViewModel [
 ]
 
 { #category : #accessing }
+LBHandshake >> name [
+	^ payload name
+]
+
+{ #category : #accessing }
 LBHandshake >> payload [
 
 	^ payload 

@@ -1,12 +1,14 @@
 "
-A model for the Worspace tool
+A model for a Worspace area.
+
+It will temporarily keep track of the inspected objects in its #inspectees instVar so it can pass the inspectee to the inspectors that get opened out of it.
 "
 Class {
 	#name : #LBWorkspace,
 	#superclass : #LBViewModel,
 	#instVars : [
-		'inspectees',
-		'inspectors'
+		'selfObject',
+		'inspectees'
 	],
 	#category : #'Lobster-ViewModels'
 }
@@ -17,39 +19,39 @@ LBWorkspace >> initializeInspectees [
 ]
 
 { #category : #initialization }
-LBWorkspace >> initializeInspectors [
-	^ inspectors := Set new
-]
-
-{ #category : #initialization }
 LBWorkspace >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
+	aLBServer observeWorkspace: self.
 	aLBServer 
 		when: #inspectorOpened: send: #onInspectorOpened: to: self;
 		when: #inspectorClosed: send: #onInspectorClosed: to: self;
 		yourself 
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 LBWorkspace >> inspectees [
 	^ inspectees ifNil: [ self initializeInspectees ]
 ]
 
-{ #category : #accessing }
-LBWorkspace >> inspectors [
-	^ inspectors ifNil: [ self initializeInspectors ]
-]
-
 { #category : #reactions }
 LBWorkspace >> onInspectorClosed: aLBInspector [
-	self inspectors remove: aLBInspector ifAbsent: [  ]
+
 ]
 
 { #category : #reactions }
 LBWorkspace >> onInspectorOpened: aLBInspector [
 	(self inspectees includesKey: aLBInspector inspecteeId)
 		ifFalse: [ ^ self ].
-	self inspectors add: aLBInspector.
 	aLBInspector
 		inspectee: (self inspectees removeKey: aLBInspector inspecteeId)
+]
+
+{ #category : #accessing }
+LBWorkspace >> selfObject [
+	^ selfObject
+]
+
+{ #category : #accessing }
+LBWorkspace >> selfObject: anObject [
+	selfObject := anObject
 ]

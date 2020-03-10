@@ -10,7 +10,7 @@ Class {
 
 { #category : #actions }
 LBInspectIt >> basicInterpretOn: aViewModel [
-	| id inspectee |
+	| id inspectee  |
 	id := UUID new asString36.
 	inspectee := super basicInterpretOn: aViewModel.
 	aViewModel inspectees at: id put: inspectee.

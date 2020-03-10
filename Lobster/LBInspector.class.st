@@ -6,15 +6,28 @@ Class {
 	#superclass : #LBViewModel,
 	#instVars : [
 		'inspecteeId',
-		'inspectee'
+		'inspectee',
+		'instVarTree',
+		'workspace'
 	],
 	#category : #'Lobster-ViewModels'
 }
+
+{ #category : #accessing }
+LBInspector >> close [
+
+	"Release its strong reference to the inspectee"
+	inspectee := nil.
+	
+	super close
+]
 
 { #category : #initialization }
 LBInspector >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
 	inspecteeId := aHandshakeMessage payload inspecteeId.
+	instVarTree := self getViewModelFrom: aHandshakeMessage payload children instVarsTree.
+	workspace := self getViewModelFrom: aHandshakeMessage payload children workspace.
 	aLBServer observeInspector: self
 ]
 
