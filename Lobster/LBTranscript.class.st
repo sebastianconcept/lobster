@@ -52,3 +52,9 @@ LBTranscript >> onOpened [
 	
 	self logger start
 ]
+
+{ #category : #action }
+LBTranscript >> send: aMessage [
+	socket isConnected
+		ifTrue: [ socket sendMessage: (self wrappeMessage: aMessage) asJsonString ]
+]

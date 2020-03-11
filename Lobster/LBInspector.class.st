@@ -7,8 +7,8 @@ Class {
 	#instVars : [
 		'inspecteeId',
 		'inspectee',
-		'instVarTree',
-		'workspace'
+		'workspace',
+		'introspector'
 	],
 	#category : #'Lobster-ViewModels'
 }
@@ -17,7 +17,7 @@ Class {
 LBInspector >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
 	inspecteeId := aHandshakeMessage payload inspecteeId.
-	instVarTree := self getViewModelFrom: aHandshakeMessage payload children instVarsTree.
+	introspector := self getViewModelFrom: aHandshakeMessage payload children introspector.
 	workspace := self getViewModelFrom: aHandshakeMessage payload children workspace.
 	aLBServer observeInspector: self
 ]
@@ -31,5 +31,5 @@ LBInspector >> inspecteeId [
 LBInspector >> selfObject: anObject [
 	super selfObject: anObject.
 	workspace selfObject: anObject.
-	instVarTree selfObject: anObject
+	introspector selfObject: anObject
 ]
