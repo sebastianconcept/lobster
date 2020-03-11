@@ -13,15 +13,6 @@ Class {
 	#category : #'Lobster-ViewModels'
 }
 
-{ #category : #accessing }
-LBInspector >> close [
-
-	"Release its strong reference to the inspectee"
-	inspectee := nil.
-	
-	super close
-]
-
 { #category : #initialization }
 LBInspector >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
@@ -32,16 +23,13 @@ LBInspector >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 ]
 
 { #category : #accessing }
-LBInspector >> inspectee [
-	^ inspectee
-]
-
-{ #category : #accessing }
-LBInspector >> inspectee: anObject [
-	inspectee := anObject
-]
-
-{ #category : #accessing }
 LBInspector >> inspecteeId [
 	^ inspecteeId
+]
+
+{ #category : #accessing }
+LBInspector >> selfObject: anObject [
+	super selfObject: anObject.
+	workspace selfObject: anObject.
+	instVarTree selfObject: anObject
 ]

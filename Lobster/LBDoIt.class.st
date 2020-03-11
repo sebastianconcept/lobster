@@ -12,7 +12,7 @@ LBDoIt >> basicInterpretOn: aViewModel [
 	^ OpalCompiler new
 		source: self sourceCode readStream;
 		context: nil;
-		receiver: nil;
+		receiver: aViewModel selfObject;
 		requestor: aViewModel;
 		failBlock: [ ^ nil ];
 		options: aViewModel compilerOptions;

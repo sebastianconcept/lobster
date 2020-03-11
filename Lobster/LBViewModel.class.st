@@ -11,7 +11,8 @@ Class {
 		'name',
 		'socket',
 		'theme',
-		'bindings'
+		'bindings',
+		'selfObject'
 	],
 	#category : #'Lobster-ViewModels'
 }
@@ -72,6 +73,7 @@ LBViewModel >> bindings [
 { #category : #actions }
 LBViewModel >> close [
 	bindings ifNotNil: [ bindings := nil ].
+	selfObject := nil.
 	self closeSocket.
 
 ]
@@ -151,6 +153,16 @@ LBViewModel >> onOpened [
 LBViewModel >> replaceBindings: someBindings [
 	
 	self flag: #toBeImplemented
+]
+
+{ #category : #accessing }
+LBViewModel >> selfObject [
+	^ selfObject
+]
+
+{ #category : #accessing }
+LBViewModel >> selfObject: anObject [
+	selfObject := anObject 
 ]
 
 { #category : #accessing }

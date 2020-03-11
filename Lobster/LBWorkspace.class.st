@@ -7,7 +7,6 @@ Class {
 	#name : #LBWorkspace,
 	#superclass : #LBViewModel,
 	#instVars : [
-		'selfObject',
 		'inspectees'
 	],
 	#category : #'Lobster-ViewModels'
@@ -43,15 +42,5 @@ LBWorkspace >> onInspectorOpened: aLBInspector [
 	(self inspectees includesKey: aLBInspector inspecteeId)
 		ifFalse: [ ^ self ].
 	aLBInspector
-		inspectee: (self inspectees removeKey: aLBInspector inspecteeId)
-]
-
-{ #category : #accessing }
-LBWorkspace >> selfObject [
-	^ selfObject
-]
-
-{ #category : #accessing }
-LBWorkspace >> selfObject: anObject [
-	selfObject := anObject
+		selfObject: (self inspectees removeKey: aLBInspector inspecteeId)
 ]
