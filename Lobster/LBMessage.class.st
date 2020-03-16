@@ -77,6 +77,6 @@ LBMessage >> sentTo: aViewModel [
 
 { #category : #accessing }
 LBMessage >> wrappedAnswer: anAnswer [
-	^ {(#answer -> anAnswer printString).
+	^ {(#answer -> anAnswer asJsonString).
 	(#messageType -> self class selector)} asDictionary
 ]

@@ -10,10 +10,7 @@ Class {
 
 { #category : #actions }
 LBHandshake >> interpretOn: aViewModel [
-
-	aViewModel onOpened.
-
-	^ true
+	^ aViewModel handshake: self
 ]
 
 { #category : #accessing }

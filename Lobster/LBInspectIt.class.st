@@ -10,17 +10,17 @@ Class {
 
 { #category : #actions }
 LBInspectIt >> basicInterpretOn: aViewModel [
-	| id inspectee  |
+	| id inspectee |
 	id := UUID new asString36.
 	inspectee := super basicInterpretOn: aViewModel.
 	aViewModel inspectees at: id put: inspectee.
-	^ {(#inspectee -> inspectee printString).
-	(#id -> id)} asDictionary asJsonString
+	^ {(#inspecteePrintString -> inspectee printString).
+	(#id -> id)} asDictionary
 ]
 
 { #category : #actions }
-LBInspectIt >> wrappedAnswer: anAnswer [
-	^ {(#answer -> anAnswer).
-	(#messageType -> self class selector)} asDictionary
-
+LBInspectIt >> interpretOn: aViewModel [
+	^ [ (self basicInterpretOn: aViewModel) asJsonString ]
+		on: SyntaxErrorNotification
+		do: [ :x | x messageText ]
 ]

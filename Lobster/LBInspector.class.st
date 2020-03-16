@@ -1,5 +1,11 @@
 "
-A model for the Inspector tool
+A model for the Inspector tool.
+
+inspecteeId is where is userd as reference to match the inspectee in the ViewModel requesting the inspectIt.
+inspectee is the object being inspected
+references a dictionary with the objects (by id) which are referenced from the instrospection navigation in the UI
+workspace is a convenience workspace contextualized on what's being inspected
+introspector is the ViewModel that will help to display the parts of the inspectee
 "
 Class {
 	#name : #LBInspector,
@@ -7,19 +13,44 @@ Class {
 	#instVars : [
 		'inspecteeId',
 		'inspectee',
-		'workspace',
-		'introspector'
+		'references'
 	],
 	#category : #'Lobster-ViewModels'
 }
+
+{ #category : #actions }
+LBInspector >> handshake: aHandshakeMessage [
+	"Receives aHandshakeMessage reacts and answer its interpretation of it."
+
+	super handshake: aHandshakeMessage.
+	self introspector references: self references.
+	^ self selfObject introspectWith: self references
+]
 
 { #category : #initialization }
 LBInspector >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
 	inspecteeId := aHandshakeMessage payload inspecteeId.
-	introspector := self getViewModelFrom: aHandshakeMessage payload children introspector.
-	workspace := self getViewModelFrom: aHandshakeMessage payload children workspace.
+	self children 
+		at: #introspectorId put: aHandshakeMessage payload children introspector id;
+		at: #workspaceId put: aHandshakeMessage payload children workspace id;
+		yourself.
 	aLBServer observeInspector: self
+]
+
+{ #category : #initialization }
+LBInspector >> initializeReferences [
+	^ references := Dictionary new
+]
+
+{ #category : #accessing }
+LBInspector >> inspectee [
+	^ inspectee
+]
+
+{ #category : #accessing }
+LBInspector >> inspectee: anObject [
+	inspectee := anObject
 ]
 
 { #category : #accessing }
@@ -28,8 +59,23 @@ LBInspector >> inspecteeId [
 ]
 
 { #category : #accessing }
+LBInspector >> introspector [
+	^ self getViewModelAt: (self children at: #introspectorId)
+]
+
+{ #category : #accessing }
+LBInspector >> references [
+	^ references ifNil: [ self initializeReferences ]
+]
+
+{ #category : #accessing }
 LBInspector >> selfObject: anObject [
 	super selfObject: anObject.
-	workspace selfObject: anObject.
-	introspector selfObject: anObject
+	self workspace selfObject: anObject.
+	self introspector selfObject: anObject
+]
+
+{ #category : #accessing }
+LBInspector >> workspace [
+	^ self getViewModelAt: (self children at: #workspaceId)
 ]

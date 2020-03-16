@@ -12,7 +12,8 @@ Class {
 		'socket',
 		'theme',
 		'bindings',
-		'selfObject'
+		'selfObject',
+		'children'
 	],
 	#category : #'Lobster-ViewModels'
 }
@@ -70,6 +71,11 @@ LBViewModel >> bindings [
 	^ bindings ifNil: [ self initializeBindings ]
 ]
 
+{ #category : #accessing }
+LBViewModel >> children [
+	^ children ifNil: [ self initializeChildren ]
+]
+
 { #category : #actions }
 LBViewModel >> close [
 	bindings ifNotNil: [ bindings := nil ].
@@ -92,11 +98,19 @@ LBViewModel >> compilerOptions [
 ]
 
 { #category : #accessing }
-LBViewModel >> getViewModelFrom: spec [
+LBViewModel >> getViewModelAt: anId [
 	^ Lobster server views values
-		detect: [ :each | each id = spec id ]
-		ifNone: [ self
-				error: 'ViewModel not found: ' , spec id , ' (' , spec name , ')' ]
+		detect: [ :each | each id = anId ]
+		ifNone: [ self error: 'ViewModel not found: ' , anId ]
+]
+
+{ #category : #actions }
+LBViewModel >> handshake: aHandshakeMessage [ 
+	"Receives aHandshakeMessage reacts and answer its interpretation of it."
+	
+	self onOpened.
+	
+	^ true
 ]
 
 { #category : #accessing }
@@ -108,6 +122,11 @@ LBViewModel >> id [
 LBViewModel >> initializeBindings [
 
 	^ bindings := Dictionary new
+]
+
+{ #category : #accessing }
+LBViewModel >> initializeChildren [
+	^ children := Dictionary new
 ]
 
 { #category : #initialization }

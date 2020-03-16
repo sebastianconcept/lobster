@@ -21,7 +21,9 @@ LBDoIt >> basicInterpretOn: aViewModel [
 
 { #category : #actions }
 LBDoIt >> interpretOn: aViewModel [
-	^ [ self basicInterpretOn: aViewModel ]
+	| answer |
+	^ [ answer := self basicInterpretOn: aViewModel.
+	answer printString ]
 		on: SyntaxErrorNotification
 		do: [ :x | x messageText ]
 ]
