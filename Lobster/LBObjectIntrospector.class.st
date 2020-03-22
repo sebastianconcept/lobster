@@ -4,26 +4,8 @@ The object introspector can visit instances of classes with FixedLayout and crea
 Class {
 	#name : #LBObjectIntrospector,
 	#superclass : #LBAbstractIntrospector,
-	#category : #'Lobster-Helpers'
+	#category : #'Lobster-Introspection'
 }
-
-{ #category : #action }
-LBObjectIntrospector >> basicCollapsedIntrospectAs: name with: references [
-	| referenceId answer instVarNames |
-	referenceId := UUID new asString36.
-	references at: referenceId put: introspectee.
-	answer := Dictionary new
-		at: #id put: referenceId;
-		at: #name put: name;
-		at: #printString put: introspectee printString;
-		yourself.
-	instVarNames := introspectee class allInstVarNames.
-	^ instVarNames size isZero
-		ifTrue: [ answer ]
-		ifFalse: [ answer
-				at: #nodes put: '...';
-				yourself ]
-]
 
 { #category : #action }
 LBObjectIntrospector >> basicIntrospectAs: name id: referenceId with: references [
@@ -38,6 +20,7 @@ LBObjectIntrospector >> basicIntrospectAs: name id: referenceId with: references
 	^ instVarNames size isZero
 		ifTrue: [ answer ]
 		ifFalse: [ answer
+				at: #isExpanded put: true;
 				at: #nodes
 					put:
 					(self introspectInstVarNames: instVarNames with: references);
@@ -46,43 +29,23 @@ LBObjectIntrospector >> basicIntrospectAs: name id: referenceId with: references
 
 { #category : #action }
 LBObjectIntrospector >> basicIntrospectAs: name with: references [
-	| referenceId answer instVarNames |
-	referenceId := UUID new asString36.
-	references at: referenceId put: introspectee.
-	answer := Dictionary new
-		at: #id put: referenceId;
-		at: #name put: name;
-		at: #printString put: introspectee printString;
-		yourself.
-	instVarNames := introspectee class allInstVarNames.
-	^ instVarNames size isZero
-		ifTrue: [ answer ]
-		ifFalse: [ answer
-				at: #nodes
-					put:
-					(self introspectInstVarNames: instVarNames with: references);
-				yourself ]
+	^ self
+		basicIntrospectAs: name
+		id: UUID new asString36
+		with: references
 ]
 
 { #category : #action }
-LBObjectIntrospector >> basicIntrospectOn: aDictionary with: references [
-	| referenceId answer instVarNames |
-	referenceId := UUID new asString36.
-	references at: referenceId put: introspectee.
-	answer := aDictionary
-		at: #id put: referenceId;
-		at: #name put: 'self';
-		at: #printString put: introspectee printString;
-		yourself.
-	instVarNames := introspectee class allInstVarNames.
-	^ instVarNames size isZero
-		ifTrue: [ answer ]
-		ifFalse: [ answer
-				at: #isExpanded put: true;
-				at: #nodes
-					put:
-					(self introspectInstVarNames: instVarNames with: references);
-				yourself ]
+LBObjectIntrospector >> basicIntrospectWith: references [
+	^ self
+		basicIntrospectAs: 'self'
+		id: UUID new asString36
+		with: references
+]
+
+{ #category : #testing }
+LBObjectIntrospector >> canIntrospect [
+	^ introspectee class allInstVarNames isEmpty not
 ]
 
 { #category : #action }

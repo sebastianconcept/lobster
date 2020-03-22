@@ -33,7 +33,7 @@ ProtoObject >> introspectWith: references [
 { #category : #'*Lobster' }
 ProtoObject class >> introspectionSupporFor: anInstance [
 	^ (self introspectionSupports
-		at: anInstance class classLayout
+		at: anInstance class classLayout class
 		ifAbsent: [ LBObjectIntrospector ]) on: anInstance
 ]
 

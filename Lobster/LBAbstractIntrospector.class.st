@@ -9,7 +9,7 @@ Class {
 	#instVars : [
 		'introspectee'
 	],
-	#category : #'Lobster-Helpers'
+	#category : #'Lobster-Introspection'
 }
 
 { #category : #'instance creation' }
@@ -20,9 +20,31 @@ LBAbstractIntrospector class >> on: anObject [
 ]
 
 { #category : #action }
+LBAbstractIntrospector >> basicCollapsedIntrospectAs: name with: references [
+	| referenceId answer |
+	referenceId := UUID new asString36.
+	references at: referenceId put: introspectee.
+	answer := Dictionary new
+		at: #id put: referenceId;
+		at: #name put: name;
+		at: #printString put: introspectee printString;
+		yourself.
+	^ self canIntrospect
+		ifFalse: [ answer ]
+		ifTrue: [ answer
+				at: #nodes put: '...';
+				yourself ]
+]
+
+{ #category : #initialization }
 LBAbstractIntrospector >> basicIntrospectWith: references [
 
-	^ self basicIntrospectOn: Dictionary new with: references
+	^ self subclassResponsibility 
+]
+
+{ #category : #testing }
+LBAbstractIntrospector >> canIntrospect [
+	^ self subclassResponsibility
 ]
 
 { #category : #initialization }
