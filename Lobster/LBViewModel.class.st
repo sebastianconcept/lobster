@@ -13,7 +13,8 @@ Class {
 		'theme',
 		'bindings',
 		'selfObject',
-		'children'
+		'children',
+		'callbacks'
 	],
 	#category : #'Lobster-ViewModels'
 }
@@ -72,6 +73,11 @@ LBViewModel >> bindings [
 ]
 
 { #category : #accessing }
+LBViewModel >> callbacks [
+	^ callbacks ifNil: [ self initializeCallbacks ]
+]
+
+{ #category : #accessing }
 LBViewModel >> children [
 	^ children ifNil: [ self initializeChildren ]
 ]
@@ -122,6 +128,11 @@ LBViewModel >> id [
 LBViewModel >> initializeBindings [
 
 	^ bindings := Dictionary new
+]
+
+{ #category : #initialization }
+LBViewModel >> initializeCallbacks [
+	^ callbacks := Dictionary new
 ]
 
 { #category : #accessing }

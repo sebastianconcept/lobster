@@ -65,6 +65,11 @@ LBMessage >> interpretOn: aView [
 	self subclassResponsibility 
 ]
 
+{ #category : #accessing }
+LBMessage >> payload [
+	^ payload
+]
+
 { #category : #actions }
 LBMessage >> sentTo: aViewModel [
 	| answer |

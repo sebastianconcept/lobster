@@ -13,21 +13,27 @@ ProtoObject >> collapsedInstrospectAs: name with: references [
 ]
 
 { #category : #'*Lobster' }
-ProtoObject >> introspectAs: name id: anId with: references [
-
-	^ (self class introspectionSupporFor: self) basicIntrospectAs: name id: anId with: references
+ProtoObject >> introspectAs: name id: anId with: references for: anIntrospector [
+	^ (self class introspectionSupporFor: self)
+		basicIntrospectAs: name
+		id: anId
+		with: references
+		for: anIntrospector
 ]
 
 { #category : #'*Lobster' }
-ProtoObject >> introspectAs: name with: references [
-
-	^ (self class introspectionSupporFor: self) basicIntrospectAs: name with: references
+ProtoObject >> introspectAs: name with: references for: anIntrospector [
+	^ (self class introspectionSupporFor: self)
+		basicIntrospectAs: name
+		with: references
+		for: anIntrospector
 ]
 
 { #category : #'*Lobster' }
-ProtoObject >> introspectWith: references [
-
-	^ (self class introspectionSupporFor: self) basicIntrospectWith: references
+ProtoObject >> introspectWith: references for: anIntrospector [
+	^ (self class introspectionSupporFor: self)
+		basicIntrospectWith: references
+		for: anIntrospector
 ]
 
 { #category : #'*Lobster' }

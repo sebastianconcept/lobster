@@ -15,6 +15,7 @@ LBIntrospect >> basicInterpretOn: aViewModel [
 		introspectAs: payload nodeSpec name
 		id: payload nodeSpec id
 		with: aViewModel references
+		for: aViewModel
 ]
 
 { #category : #actions }

@@ -24,7 +24,9 @@ LBInspector >> handshake: aHandshakeMessage [
 
 	super handshake: aHandshakeMessage.
 	self introspector references: self references.
-	^ self selfObject introspectWith: self references
+	^ self selfObject
+		introspectWith: self references
+		for: self introspector
 ]
 
 { #category : #initialization }

@@ -37,7 +37,7 @@ LBAbstractIntrospector >> basicCollapsedIntrospectAs: name with: references [
 ]
 
 { #category : #initialization }
-LBAbstractIntrospector >> basicIntrospectWith: references [
+LBAbstractIntrospector >> basicIntrospectWith: references for: anIntrospector [
 
 	^ self subclassResponsibility 
 ]

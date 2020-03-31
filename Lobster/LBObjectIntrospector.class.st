@@ -8,8 +8,8 @@ Class {
 }
 
 { #category : #action }
-LBObjectIntrospector >> basicIntrospectAs: name id: referenceId with: references [
-	|  answer instVarNames |
+LBObjectIntrospector >> basicIntrospectAs: name id: referenceId with: references for: anIntrospector [
+	| answer instVarNames |
 	references at: referenceId put: introspectee.
 	answer := Dictionary new
 		at: #id put: referenceId;
@@ -22,25 +22,26 @@ LBObjectIntrospector >> basicIntrospectAs: name id: referenceId with: references
 		ifFalse: [ answer
 				at: #isExpanded put: true;
 				at: #nodes
-					put:
-					(self introspectInstVarNames: instVarNames with: references);
+					put: (self introspectInstVarNames: instVarNames with: references);
 				yourself ]
 ]
 
 { #category : #action }
-LBObjectIntrospector >> basicIntrospectAs: name with: references [
+LBObjectIntrospector >> basicIntrospectAs: name with: references for: anIntrospector [
 	^ self
 		basicIntrospectAs: name
 		id: UUID new asString36
 		with: references
+		for: anIntrospector
 ]
 
 { #category : #action }
-LBObjectIntrospector >> basicIntrospectWith: references [
+LBObjectIntrospector >> basicIntrospectWith: references for: anIntrospector [
 	^ self
 		basicIntrospectAs: 'self'
 		id: UUID new asString36
 		with: references
+		for: anIntrospector
 ]
 
 { #category : #testing }
