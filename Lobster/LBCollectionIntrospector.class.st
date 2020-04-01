@@ -5,7 +5,8 @@ Class {
 	#name : #LBCollectionIntrospector,
 	#superclass : #LBAbstractIntrospector,
 	#instVars : [
-		'batch'
+		'batch',
+		'loadMoreId'
 	],
 	#category : #'Lobster-Introspection'
 }
@@ -17,9 +18,9 @@ LBCollectionIntrospector class >> batchSize [
 	^ 200
 ]
 
-{ #category : #initialization }
+{ #category : #actions }
 LBCollectionIntrospector >> basicIntrospectAs: name id: referenceId with: references for: anIntrospector [
-	| answer children end loadMoreId start |
+	| answer end elements |
 	references at: referenceId put: introspectee.
 	answer := Dictionary new
 		at: #id put: referenceId;
@@ -28,38 +29,37 @@ LBCollectionIntrospector >> basicIntrospectAs: name id: referenceId with: refere
 		yourself.
 	^ introspectee size isZero
 		ifTrue: [ answer ]
-		ifFalse: [ start := 1 + ((self batch - 1) * self class batchSize).
-			end := introspectee size min: start + self class batchSize.
-			children := (self
-				basicIntrospectFrom: start
+		ifFalse: [ end := self end.
+			elements := (self
+				basicIntrospectFrom: self start
 				to: end
 				with: references) asOrderedCollection.
 			introspectee size > end
 				ifTrue: [ loadMoreId := UUID new asString36.
 					anIntrospector callbacks
 						at: loadMoreId
-						put: [ self nextBatchWith: references as: loadMoreId].
-					children
+						put: [ self nextBatchWith: references ].
+					elements
 						addLast:
 							{(#loadMoreId -> loadMoreId).
-							(#name -> (end + 1) asString).
-							(#printString -> 'more...')} asDictionary ].
+							(#name -> '').
+							(#printString -> 'load more...')} asDictionary ].
 			answer
 				at: #isExpanded put: true;
-				at: #nodes put: children;
+				at: #nodes put: elements;
 				yourself ]
 ]
 
-{ #category : #initialization }
+{ #category : #actions }
 LBCollectionIntrospector >> basicIntrospectFrom: start to: end with: references [
 	^ (introspectee copyFrom: start to: end)
 		withIndexCollect: [ :element :index | 
 			element
-				collapsedInstrospectAs: index asString
+				collapsedInstrospectAs: (start + index - 1) asString
 				with: references ]
 ]
 
-{ #category : #initialization }
+{ #category : #actions }
 LBCollectionIntrospector >> basicIntrospectWith: references for: anIntrospector [
 	^ self
 		basicIntrospectAs: 'self'
@@ -78,22 +78,38 @@ LBCollectionIntrospector >> canIntrospect [
 	^ introspectee size > 0
 ]
 
+{ #category : #accessing }
+LBCollectionIntrospector >> end [
+	^ introspectee size min: self start + self class batchSize - 1
+]
+
 { #category : #initialization }
 LBCollectionIntrospector >> initializeBatch [
 	^ batch := 1
 ]
 
 { #category : #actions }
-LBCollectionIntrospector >> nextBatchWith: references as: loadMoreId [
-	| start end |
+LBCollectionIntrospector >> nextBatchWith: references [
+	| end elements |
 	batch := batch + 1.
-	start := 1 + ((batch - 1) * self class batchSize).
-	end := introspectee size min: start + self class batchSize - 1.
+	end := self end.
+	elements := (self
+		basicIntrospectFrom: self start
+		to: end
+		with: references) asOrderedCollection.
+	introspectee size > end
+		ifTrue: [ elements
+				addLast:
+					{(#loadMoreId -> loadMoreId).
+					(#name -> '').
+					(#printString -> 'load more...')} asDictionary ].
 	^ Dictionary new
-		at: #elements
-			put:
-			(self basicIntrospectFrom: start to: end with: references)
-				asOrderedCollection;
+		at: #elements put: elements;
 		at: #loadMoreId put: loadMoreId;
 		yourself
+]
+
+{ #category : #accessing }
+LBCollectionIntrospector >> start [
+	^ 1 + ((self batch - 1) * self class batchSize)
 ]
