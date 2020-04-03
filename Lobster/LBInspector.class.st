@@ -22,11 +22,23 @@ Class {
 LBInspector >> handshake: aHandshakeMessage [
 	"Receives aHandshakeMessage reacts and answer its interpretation of it."
 
+	| setSelfObjectId |
 	super handshake: aHandshakeMessage.
 	self introspector references: self references.
-	^ self selfObject
-		introspectWith: self references
-		for: self introspector
+	setSelfObjectId := UUID new asString36.
+	self callbacks
+		at: setSelfObjectId
+		put: [ :nextSelfObject | 
+			self selfObject: nextSelfObject.
+			setSelfObjectId ].
+	^ Dictionary new
+		at: #setSelfObjectId put: setSelfObjectId;
+		at: #roots
+			put:
+			(self selfObject
+				introspectWith: self references
+				for: self introspector);
+		yourself
 ]
 
 { #category : #initialization }

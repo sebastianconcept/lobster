@@ -10,6 +10,12 @@ Class {
 }
 
 { #category : #actions }
+LBCallback >> getReferencesFrom: aViewModel [
+	^ self payload options references
+		collect: [ :key | aViewModel references at: key ]
+]
+
+{ #category : #actions }
 LBCallback >> interpretOn: aViewModel [
 	"TODO: 
 	1. use the optional 'options' object in the payload as arguments 
@@ -17,5 +23,8 @@ LBCallback >> interpretOn: aViewModel [
 
 	^ aViewModel callbacks
 		at: self payload selector
-		ifPresent: [ :action | action value ]
+		ifPresent: [ :action | 
+			(self payload options references isNil or: [ self payload options references isEmpty ])
+				ifTrue: [ action value ]
+				ifFalse: [ action valueWithArguments: (self getReferencesFrom: aViewModel) ] ]
 ]
