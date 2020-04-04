@@ -4,7 +4,7 @@ Supports interpretation of a DoIt that will end up answering what's needed to in
 "
 Class {
 	#name : #LBInspectIt,
-	#superclass : #LBDoIt,
+	#superclass : #LBDoAndObserveIt,
 	#category : #'Lobster-Protocol'
 }
 
@@ -16,11 +16,4 @@ LBInspectIt >> basicInterpretOn: aViewModel [
 	aViewModel inspectees at: id put: inspectee.
 	^ {(#inspecteePrintString -> inspectee printString).
 	(#id -> id)} asDictionary
-]
-
-{ #category : #actions }
-LBInspectIt >> interpretOn: aViewModel [
-	^ [ (self basicInterpretOn: aViewModel) asJsonString ]
-		on: SyntaxErrorNotification
-		do: [ :x | x messageText ]
 ]

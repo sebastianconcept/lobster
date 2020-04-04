@@ -5,7 +5,7 @@ Looks the same as DoIt on the server side but the frontend will handle different
 "
 Class {
 	#name : #LBBrowseIt,
-	#superclass : #LBInspectIt,
+	#superclass : #LBDoAndObserveIt,
 	#category : #'Lobster-Protocol'
 }
 
