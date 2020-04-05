@@ -24,7 +24,9 @@ LBCallback >> interpretOn: aViewModel [
 	^ aViewModel callbacks
 		at: self payload selector
 		ifPresent: [ :action | 
-			(self payload options references isNil or: [ self payload options references isEmpty ])
+			(self payload options isNil
+				or: [ self payload options references isNil
+						or: [ self payload options references isEmpty ] ])
 				ifTrue: [ action value ]
 				ifFalse: [ action valueWithArguments: (self getReferencesFrom: aViewModel) ] ]
 ]
