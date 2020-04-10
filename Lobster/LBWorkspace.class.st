@@ -13,11 +13,6 @@ Class {
 }
 
 { #category : #initialization }
-LBWorkspace >> initializeInspectees [
-	^ inspectees := Dictionary new
-]
-
-{ #category : #initialization }
 LBWorkspace >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
 	"aLBServer observeWorkspace: self."
@@ -25,11 +20,6 @@ LBWorkspace >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 		when: #inspectorOpened: send: #onInspectorOpened: to: self;
 		when: #inspectorClosed: send: #onInspectorClosed: to: self;
 		yourself 
-]
-
-{ #category : #initialization }
-LBWorkspace >> inspectees [
-	^ inspectees ifNil: [ self initializeInspectees ]
 ]
 
 { #category : #reactions }
@@ -40,9 +30,9 @@ LBWorkspace >> onInspectorClosed: aLBInspector [
 { #category : #reactions }
 LBWorkspace >> onInspectorOpened: aLBInspector [
 	| inspectee |
-	(self inspectees includesKey: aLBInspector inspecteeId)
+	(self references includesKey: aLBInspector inspecteeId)
 		ifFalse: [ ^ self ].
-	inspectee := self inspectees removeKey: aLBInspector inspecteeId.
+	inspectee := self references removeKey: aLBInspector inspecteeId.
 	aLBInspector
 		inspectee: inspectee;
 		selfObject: inspectee;

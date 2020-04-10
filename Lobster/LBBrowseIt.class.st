@@ -14,7 +14,8 @@ LBBrowseIt >> basicInterpretOn: aViewModel [
 	| id answer |
 	id := UUID new asString36.
 	answer := super basicInterpretOn: aViewModel.
-	"aViewModel references at: id put: answer."
+	aViewModel references at: id put: answer class.
+	aViewModel references at: #selectedClass put: answer class.
 	^ {(#classPrintString -> answer class printString).
 	(#id -> id)} asDictionary
 ]

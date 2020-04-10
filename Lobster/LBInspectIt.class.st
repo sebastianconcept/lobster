@@ -13,7 +13,7 @@ LBInspectIt >> basicInterpretOn: aViewModel [
 	| id inspectee |
 	id := UUID new asString36.
 	inspectee := super basicInterpretOn: aViewModel.
-	aViewModel inspectees at: id put: inspectee.
+	aViewModel references at: id put: inspectee.
 	^ {(#inspecteePrintString -> inspectee printString).
 	(#id -> id)} asDictionary
 ]

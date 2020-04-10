@@ -13,8 +13,9 @@ Class {
 		'theme',
 		'bindings',
 		'selfObject',
+		'callbacks',
 		'children',
-		'callbacks'
+		'references'
 	],
 	#category : #'Lobster-ViewModels'
 }
@@ -132,7 +133,8 @@ LBViewModel >> initializeBindings [
 
 { #category : #initialization }
 LBViewModel >> initializeCallbacks [
-	^ callbacks := Dictionary new
+
+	^ callbacks := SmallDictionary new
 ]
 
 { #category : #accessing }
@@ -147,6 +149,11 @@ LBViewModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	socket := aWebSocket.
 	aHandshakeMessage theme
 		ifNotNil: [ theme := aHandshakeMessage theme ]
+]
+
+{ #category : #initialization }
+LBViewModel >> initializeReferences [
+	^ references := Dictionary new
 ]
 
 { #category : #initialization }
@@ -177,6 +184,16 @@ LBViewModel >> onClosed [
 LBViewModel >> onOpened [
 
 	self triggerEvent: #viewOpened
+]
+
+{ #category : #accessing }
+LBViewModel >> references [
+	^ references ifNil: [ self initializeReferences ]
+]
+
+{ #category : #accessing }
+LBViewModel >> references: aDictionary [
+	references := aDictionary
 ]
 
 { #category : #accessing }

@@ -12,8 +12,7 @@ Class {
 	#superclass : #LBViewModel,
 	#instVars : [
 		'inspecteeId',
-		'inspectee',
-		'references'
+		'inspectee'
 	],
 	#category : #'Lobster-ViewModels'
 }
@@ -52,11 +51,6 @@ LBInspector >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	aLBServer observeInspector: self
 ]
 
-{ #category : #initialization }
-LBInspector >> initializeReferences [
-	^ references := Dictionary new
-]
-
 { #category : #accessing }
 LBInspector >> inspectee [
 	^ inspectee
@@ -75,11 +69,6 @@ LBInspector >> inspecteeId [
 { #category : #accessing }
 LBInspector >> introspector [
 	^ self getViewModelAt: (self children at: #introspectorId)
-]
-
-{ #category : #accessing }
-LBInspector >> references [
-	^ references ifNil: [ self initializeReferences ]
 ]
 
 { #category : #accessing }
