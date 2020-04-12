@@ -50,16 +50,32 @@ LBServer >> initializeZinc [
 		yourself
 ]
 
+{ #category : #actions }
+LBServer >> observeViewModel: aViewModel with: aWebSocket [
+	aViewModel
+		when: #viewModelClosed
+		send: #onViewModelClosed:socket:
+		to: self
+		withArguments:
+			{aViewModel.
+			aWebSocket}
+]
+
 { #category : #reactions }
 LBServer >> onMessage: aMessageString from: aWebSocket [
 	"Receives aMessage from the connection with aWebSocket.
 	Makess the interpretation and sends a response."
 
-	| view message |
+	| view message newViewModel |
 	message := LBMessage for: aMessageString.
 	view := self views
 		at: aWebSocket
-		ifAbsentPut: [ LBViewModel fromMessage: message on: aWebSocket for: self ].
+		ifAbsentPut: [ newViewModel := LBViewModel
+				fromMessage: message
+				on: aWebSocket
+				for: self.
+			self triggerEvent: #viewModelOpened: with: newViewModel.
+			newViewModel ].
 	message sentTo: view
 ]
 
@@ -69,13 +85,14 @@ LBServer >> onSocketClosed: aWebSocket [
 ]
 
 { #category : #reactions }
-LBServer >> onViewClosed: aViewModel socket: aWebSocket [
-	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ]
+LBServer >> onViewModelClosed: aViewModel socket: aWebSocket [
+	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ].
+	self triggerEvent: #onViewModelClosed: with: aViewModel.
+	aViewModel removeDependent: self
 ]
 
 { #category : #reactions }
 LBServer >> onWebSocketConnected: aWebSocket [
-
 	^ self
 		run: aWebSocket
 		with: [ :message | self onMessage: message from: aWebSocket ]
@@ -106,9 +123,9 @@ LBServer >> stop [
 	zinc
 		ifNotNil: [ zinc stop.
 			announcer := nil.
-			zinc := nil.
-			views ifNotNil: [ views valuesDo: [ :view | view close ] ].
-			views := nil ]
+			zinc := nil ].
+	views ifNotNil: [ views valuesDo: [ :view | view close ] ].
+	views := nil
 ]
 
 { #category : #accessing }

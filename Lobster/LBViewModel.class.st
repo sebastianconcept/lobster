@@ -1,5 +1,5 @@
 "
-This models the view that is connected on the UI side.
+Views on the UI frontend will be connected to instances of ViewModels here in the server side.
 
 As typically Smalltalk tools do, I preserve the temp variables that get created from assignations to undefined literals. These will be made WorkspaceVariable and preserved in bindings.
 "
@@ -8,11 +8,16 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
+		'name',
 		'socket',
 		'theme',
-		'bindings'
+		'bindings',
+		'selfObject',
+		'callbacks',
+		'children',
+		'references'
 	],
-	#category : #'Lobster-Models'
+	#category : #'Lobster-ViewModels'
 }
 
 { #category : #accesing }
@@ -51,6 +56,12 @@ LBViewModel class >> selector [
 ]
 
 { #category : #accessing }
+LBViewModel >> addBindings: someBindings [
+	
+	self flag: #toBeImplemented
+]
+
+{ #category : #accessing }
 LBViewModel >> bindingOf: aString [
 	(self bindings includesKey: aString)
 		ifFalse: [ bindings add: (WorkspaceVariable key: aString asSymbol) ].
@@ -62,11 +73,22 @@ LBViewModel >> bindings [
 	^ bindings ifNil: [ self initializeBindings ]
 ]
 
+{ #category : #accessing }
+LBViewModel >> callbacks [
+	^ callbacks ifNil: [ self initializeCallbacks ]
+]
+
+{ #category : #accessing }
+LBViewModel >> children [
+	^ children ifNil: [ self initializeChildren ]
+]
+
 { #category : #actions }
 LBViewModel >> close [
 	bindings ifNotNil: [ bindings := nil ].
+	selfObject := nil.
 	self closeSocket.
-	self triggerEvent: #viewClosed
+	self triggerEvent: #viewModelClosed
 ]
 
 { #category : #actions }
@@ -83,6 +105,22 @@ LBViewModel >> compilerOptions [
 ]
 
 { #category : #accessing }
+LBViewModel >> getViewModelAt: anId [
+	^ Lobster server views values
+		detect: [ :each | each id = anId ]
+		ifNone: [ self error: 'ViewModel not found: ' , anId ]
+]
+
+{ #category : #actions }
+LBViewModel >> handshake: aHandshakeMessage [ 
+	"Receives aHandshakeMessage reacts and answer its interpretation of it."
+	
+	self onViewOpened.
+	
+	^ true
+]
+
+{ #category : #accessing }
 LBViewModel >> id [
 	^ id
 ]
@@ -94,12 +132,30 @@ LBViewModel >> initializeBindings [
 ]
 
 { #category : #initialization }
+LBViewModel >> initializeCallbacks [
+
+	^ callbacks := SmallDictionary new
+]
+
+{ #category : #accessing }
+LBViewModel >> initializeChildren [
+	^ children := Dictionary new
+]
+
+{ #category : #initialization }
 LBViewModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	id := aHandshakeMessage id.
+	name := aHandshakeMessage name.
 	socket := aWebSocket.
 	aHandshakeMessage theme
 		ifNotNil: [ theme := aHandshakeMessage theme ].
-	self setObservationsOn: aLBServer
+
+	aLBServer observeViewModel: self with: aWebSocket
+]
+
+{ #category : #initialization }
+LBViewModel >> initializeReferences [
+	^ references := Dictionary new
 ]
 
 { #category : #initialization }
@@ -115,16 +171,56 @@ LBViewModel >> interactive [
 	^ false
 ]
 
+{ #category : #accessing }
+LBViewModel >> name [
+	^ name
+]
+
 { #category : #reactions }
-LBViewModel >> onClosed [
-
-
+LBViewModel >> onChildClosed: aViewModel [
+	self children removeKey: aViewModel id ifAbsent: [  ]
 ]
 
 { #category : #reactions }
 LBViewModel >> onOpened [
 
-	"no-op by default"
+	self triggerEvent: #viewOpened
+]
+
+{ #category : #reactions }
+LBViewModel >> onViewOpened [
+
+]
+
+{ #category : #reactions }
+LBViewModel >> onViewOpened: aLBInspector [
+self halt
+]
+
+{ #category : #accessing }
+LBViewModel >> references [
+	^ references ifNil: [ self initializeReferences ]
+]
+
+{ #category : #accessing }
+LBViewModel >> references: aDictionary [
+	references := aDictionary
+]
+
+{ #category : #accessing }
+LBViewModel >> replaceBindings: someBindings [
+	
+	self flag: #toBeImplemented
+]
+
+{ #category : #accessing }
+LBViewModel >> selfObject [
+	^ selfObject
+]
+
+{ #category : #accessing }
+LBViewModel >> selfObject: anObject [
+	selfObject := anObject 
 ]
 
 { #category : #accessing }
@@ -144,15 +240,6 @@ LBViewModel >> sendMessage: aJsonString [
 { #category : #accessing }
 LBViewModel >> setBindings: aDictionary [
 	bindings := aDictionary
-]
-
-{ #category : #initialization }
-LBViewModel >> setObservationsOn: aLBServer [
-	self
-		when: #viewClosed
-		send: #onViewClosed:socket:
-		to: aLBServer
-		withArguments: {self. socket}
 ]
 
 { #category : #accessing }

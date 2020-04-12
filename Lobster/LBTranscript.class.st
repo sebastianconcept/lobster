@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'logger'
 	],
-	#category : #'Lobster-Models'
+	#category : #'Lobster-ViewModels'
 }
 
 { #category : #reactions }
@@ -25,15 +25,18 @@ LBTranscript >> initializeLogger [
 	^ logger := LBTranscriptLogger on: self
 ]
 
+{ #category : #initialization }
+LBTranscript >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
+	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
+
+	aLBServer announcer
+		when: LBTranscriptSignal
+		do: [ :ann | self send: (LBTranscriptMessage on: ann message) ]
+]
+
 { #category : #accessing }
 LBTranscript >> logger [
 	^ logger ifNil: [ self initializeLogger ]
-]
-
-{ #category : #reactions }
-LBTranscript >> onClosed [
-	super onClosed.
-	self close
 ]
 
 { #category : #reactions }
@@ -43,19 +46,15 @@ LBTranscript >> onNextPut: anLBTranscriptSignal [
 ]
 
 { #category : #reactions }
-LBTranscript >> onOpened [
+LBTranscript >> onViewOpened [
 
-	super onOpened.
+	super onViewOpened.
 	
 	self logger start
 ]
 
-{ #category : #initialization }
-LBTranscript >> setObservationsOn: aLBServer [
-	
-	super setObservationsOn: aLBServer.
-
-	aLBServer announcer
-		when: LBTranscriptSignal
-		do: [ :ann | self send: (LBTranscriptMessage on: ann message) ]
+{ #category : #action }
+LBTranscript >> send: aMessage [
+	socket isConnected
+		ifTrue: [ socket sendMessage: (self wrappeMessage: aMessage) asJsonString ]
 ]

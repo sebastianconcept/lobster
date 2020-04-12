@@ -8,15 +8,22 @@ Class {
 }
 
 { #category : #actions }
-LBDoIt >> interpretOn: aViewModel [
-	^ [ OpalCompiler new
+LBDoIt >> basicInterpretOn: aViewModel [
+	^ OpalCompiler new
 		source: self sourceCode readStream;
 		context: nil;
-		receiver: nil;
+		receiver: aViewModel selfObject;
 		requestor: aViewModel;
 		failBlock: [ ^ nil ];
 		options: aViewModel compilerOptions;
-		evaluate ]
+		evaluate
+]
+
+{ #category : #actions }
+LBDoIt >> interpretOn: aViewModel [
+	| answer |
+	^ [ answer := self basicInterpretOn: aViewModel.
+	answer printString ]
 		on: SyntaxErrorNotification
 		do: [ :x | x messageText ]
 ]

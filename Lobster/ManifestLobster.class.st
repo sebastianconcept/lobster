@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : #'code-critics' }
+ManifestLobster class >> ruleRBBadMessageRuleV1FalsePositive [
+	^ #(#(#(#RGPackageDefinition #(#Lobster)) #'2020-03-15T22:31:53.754845-03:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestLobster class >> ruleRBExtraBlockRuleV1FalsePositive [
 	^ #(#(#(#RGPackageDefinition #(#Lobster)) #'2020-02-28T17:35:34.829329-03:00') )
 ]
