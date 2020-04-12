@@ -115,7 +115,7 @@ LBViewModel >> getViewModelAt: anId [
 LBViewModel >> handshake: aHandshakeMessage [ 
 	"Receives aHandshakeMessage reacts and answer its interpretation of it."
 	
-	self onViewOpened.
+	self onViewModelOpened.
 	
 	^ true
 ]
@@ -182,19 +182,8 @@ LBViewModel >> onChildClosed: aViewModel [
 ]
 
 { #category : #reactions }
-LBViewModel >> onOpened [
+LBViewModel >> onViewModelOpened [
 
-	self triggerEvent: #viewOpened
-]
-
-{ #category : #reactions }
-LBViewModel >> onViewOpened [
-
-]
-
-{ #category : #reactions }
-LBViewModel >> onViewOpened: aLBInspector [
-self halt
 ]
 
 { #category : #accessing }

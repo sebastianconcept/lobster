@@ -88,6 +88,7 @@ LBServer >> onSocketClosed: aWebSocket [
 LBServer >> onViewModelClosed: aViewModel socket: aWebSocket [
 	views ifNotNil: [ views removeKey: aWebSocket ifAbsent: [ nil ] ].
 	self triggerEvent: #onViewModelClosed: with: aViewModel.
+	self announcer unsubscribe: self.
 	aViewModel removeDependent: self
 ]
 
@@ -122,8 +123,8 @@ LBServer >> start [
 LBServer >> stop [
 	zinc
 		ifNotNil: [ zinc stop.
-			announcer := nil.
 			zinc := nil ].
+	announcer := nil.
 	views ifNotNil: [ views valuesDo: [ :view | view close ] ].
 	views := nil
 ]

@@ -46,9 +46,9 @@ LBTranscript >> onNextPut: anLBTranscriptSignal [
 ]
 
 { #category : #reactions }
-LBTranscript >> onViewOpened [
+LBTranscript >> onViewModelOpened [
 
-	super onViewOpened.
+	super onViewModelOpened.
 	
 	self logger start
 ]

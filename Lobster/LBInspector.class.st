@@ -72,6 +72,15 @@ LBInspector >> introspector [
 ]
 
 { #category : #accessing }
+LBInspector >> printOn: aStream [
+	super printOn: aStream.
+	aStream
+		nextPut: $(;
+		nextPutAll: inspectee asString;
+		nextPut: $)
+]
+
+{ #category : #accessing }
 LBInspector >> selfObject: anObject [
 	super selfObject: anObject.
 	self workspace selfObject: anObject.
