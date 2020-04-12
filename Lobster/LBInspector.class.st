@@ -48,7 +48,7 @@ LBInspector >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 		at: #introspectorId put: aHandshakeMessage payload children introspector id;
 		at: #workspaceId put: aHandshakeMessage payload children workspace id;
 		yourself.
-	aLBServer observeInspector: self
+
 ]
 
 { #category : #accessing }

@@ -10,7 +10,7 @@ Class {
 { #category : #actions }
 LBViewClosed >> interpretOn: aViewModel [
 
-	aViewModel onClosed.
+	aViewModel close.
 	
 	^ true
 ]

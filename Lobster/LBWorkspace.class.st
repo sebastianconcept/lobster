@@ -12,28 +12,24 @@ Class {
 	#category : #'Lobster-ViewModels'
 }
 
-{ #category : #initialization }
+{ #category : #reactions }
 LBWorkspace >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	super initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer.
-	"aLBServer observeWorkspace: self."
-	aLBServer 
-		when: #inspectorOpened: send: #onInspectorOpened: to: self;
+	aLBServer
+		when: #viewModelOpened: send: #onNewViewModelOpened: to: self;
 		when: #inspectorClosed: send: #onInspectorClosed: to: self;
-		yourself 
+		yourself
 ]
 
 { #category : #reactions }
-LBWorkspace >> onInspectorClosed: aLBInspector [
-
-]
-
-{ #category : #reactions }
-LBWorkspace >> onInspectorOpened: aLBInspector [
+LBWorkspace >> onNewViewModelOpened: aViewModel [
 	| inspectee |
-	(self references includesKey: aLBInspector inspecteeId)
+	(aViewModel class == LBInspector)
 		ifFalse: [ ^ self ].
-	inspectee := self references removeKey: aLBInspector inspecteeId.
-	aLBInspector
+	(self references includesKey: aViewModel inspecteeId)
+		ifFalse: [ ^ self ].
+	inspectee := self references removeKey: aViewModel inspecteeId.
+	aViewModel
 		inspectee: inspectee;
 		selfObject: inspectee;
 		yourself

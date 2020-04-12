@@ -88,7 +88,7 @@ LBViewModel >> close [
 	bindings ifNotNil: [ bindings := nil ].
 	selfObject := nil.
 	self closeSocket.
-
+	self triggerEvent: #viewModelClosed
 ]
 
 { #category : #actions }
@@ -115,7 +115,7 @@ LBViewModel >> getViewModelAt: anId [
 LBViewModel >> handshake: aHandshakeMessage [ 
 	"Receives aHandshakeMessage reacts and answer its interpretation of it."
 	
-	self onOpened.
+	self onViewOpened.
 	
 	^ true
 ]
@@ -148,7 +148,9 @@ LBViewModel >> initializeOn: aHandshakeMessage from: aWebSocket for: aLBServer [
 	name := aHandshakeMessage name.
 	socket := aWebSocket.
 	aHandshakeMessage theme
-		ifNotNil: [ theme := aHandshakeMessage theme ]
+		ifNotNil: [ theme := aHandshakeMessage theme ].
+
+	aLBServer observeViewModel: self with: aWebSocket
 ]
 
 { #category : #initialization }
@@ -175,15 +177,24 @@ LBViewModel >> name [
 ]
 
 { #category : #reactions }
-LBViewModel >> onClosed [
-	self close.
-	self triggerEvent: #viewClosed
+LBViewModel >> onChildClosed: aViewModel [
+	self children removeKey: aViewModel id ifAbsent: [  ]
 ]
 
 { #category : #reactions }
 LBViewModel >> onOpened [
 
 	self triggerEvent: #viewOpened
+]
+
+{ #category : #reactions }
+LBViewModel >> onViewOpened [
+
+]
+
+{ #category : #reactions }
+LBViewModel >> onViewOpened: aLBInspector [
+self halt
 ]
 
 { #category : #accessing }

@@ -14,6 +14,7 @@ LBInspectIt >> basicInterpretOn: aViewModel [
 	id := UUID new asString36.
 	inspectee := super basicInterpretOn: aViewModel.
 	aViewModel references at: id put: inspectee.
+
 	^ {(#inspecteePrintString -> inspectee printString).
 	(#id -> id)} asDictionary
 ]
